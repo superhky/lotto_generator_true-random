@@ -9,5 +9,6 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  base: './', // 상대 경로 설정을 통해 배포 환경 호환성 확보
+  // base를 '/'로 설정하여 Cloudflare Pages의 표준 경로를 따릅니다.
+  base: '/',
 })
