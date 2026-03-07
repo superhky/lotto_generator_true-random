@@ -1,0 +1,46 @@
+
+@import "tailwindcss";
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #0f172a;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-50;
+  }
+}
+
+.lotto-ball {
+  @apply w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-lg border border-white/20 transition-all;
+}
+
+/* Color schemes for lotto balls */
+.ball-1 { @apply bg-yellow-500 text-slate-900; }
+.ball-10 { @apply bg-blue-500 text-white; }
+.ball-20 { @apply bg-red-500 text-white; }
+.ball-30 { @apply bg-slate-500 text-white; }
+.ball-40 { @apply bg-green-500 text-white; }
