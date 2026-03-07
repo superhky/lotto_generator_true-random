@@ -9,9 +9,9 @@ import {
   getJitterRandom, 
   getUserEntropyRandom 
 } from './utils/TRNGService';
-import AdComponent from './components/AdComponent';
+// import AdComponent from './components/AdComponent'; // 심사 중 미사용
 import InfoSection from './components/InfoSection';
-import InterstitialAd from './components/InterstitialAd';
+// import InterstitialAd from './components/InterstitialAd'; // 심사 중 미사용
 import { translations, type Language } from './utils/translations';
 
 interface LottoSet {
@@ -26,7 +26,7 @@ const App: React.FC = () => {
   const [lang, setLang] = useState<Language>('ko');
   const [sets, setSets] = useState<LottoSet[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isAdOpen, setIsAdOpen] = useState(false);
+  // const [isAdOpen, setIsAdOpen] = useState(false); // 심사 중 미사용
   const [userEntropy, setUserEntropy] = useState<number[]>([]);
   const [hasGenerated, setHasGenerated] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
@@ -97,13 +97,14 @@ const App: React.FC = () => {
   }, [userEntropy, t]);
 
   const handleStartGeneration = () => {
-    // 애드센스 심사를 위해 번호 생성 시 전면 광고를 띄우지 않고 즉시 결과를 보여줍니다.
     generateAllNumbers();
   };
 
+  /* // 심사 중 미사용
   const onAdClose = () => {
     setIsAdOpen(false);
   };
+  */
 
   const getBallColor = (num: number) => {
     if (num <= 10) return 'ball-1';
@@ -119,9 +120,6 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-500/30">
-      {/* Interstitial Ad Layer - 심사 통과 전까지는 비활성화합니다. */}
-      {/* <InterstitialAd isOpen={isAdOpen} onClose={onAdClose} lang={lang} /> */}
-
       {/* Language Switcher Floating Button */}
       <div className="fixed top-6 right-6 z-40">
         <button 
@@ -152,9 +150,6 @@ const App: React.FC = () => {
             {t.heroSubtitle2}
           </p>
         </header>
-
-        {/* Top Ad - 심사를 위해 일시적으로 숨김 처리 */}
-        {/* <AdComponent slot="1234567890" /> */}
 
         {/* Generation Trigger */}
         <div className="flex justify-center my-12">
@@ -227,11 +222,6 @@ const App: React.FC = () => {
             )}
           </AnimatePresence>
         </div>
-
-        {/* Bottom Ad - 심사를 위해 일시적으로 숨김 처리 */}
-        {/* <div className="mt-12">
-          <AdComponent slot="0987654321" />
-        </div> */}
 
         {/* Educational Info Section */}
         <InfoSection lang={lang} />

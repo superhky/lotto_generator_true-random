@@ -9,4 +9,5 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  base: './', // 상대 경로 설정을 통해 배포 환경 호환성 확보
 })
