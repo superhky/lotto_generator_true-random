@@ -10,6 +10,7 @@ import {
   getUserEntropyRandom 
 } from './utils/TRNGService';
 // import AdComponent from './components/AdComponent'; // 심사 중 미사용
+import KakaoAd from './components/KakaoAd';
 import InfoSection from './components/InfoSection';
 // import InterstitialAd from './components/InterstitialAd'; // 심사 중 미사용
 import { translations, type Language } from './utils/translations';
@@ -222,6 +223,9 @@ const App: React.FC = () => {
             )}
           </AnimatePresence>
         </div>
+
+        {/* Ad for Review */}
+        <KakaoAd />
 
         {/* Educational Info Section */}
         <InfoSection lang={lang} />
