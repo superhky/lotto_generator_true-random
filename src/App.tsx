@@ -11,6 +11,7 @@ import {
 } from './utils/TRNGService';
 // import AdComponent from './components/AdComponent'; // 심사 중 미사용
 import KakaoAd from './components/KakaoAd';
+import KakaoAdVertical from './components/KakaoAdVertical';
 import InfoSection from './components/InfoSection';
 // import InterstitialAd from './components/InterstitialAd'; // 심사 중 미사용
 import { translations, type Language } from './utils/translations';
@@ -120,7 +121,15 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-500/30">
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-500/30 overflow-x-hidden">
+      {/* Side Ads (Visible on Large Screens) */}
+      <div className="hidden xl:block fixed left-4 top-24 z-10">
+        <KakaoAdVertical />
+      </div>
+      <div className="hidden xl:block fixed right-4 top-24 z-10">
+        <KakaoAdVertical />
+      </div>
+
       {/* Language Switcher Floating Button */}
       <div className="fixed top-6 right-6 z-40">
         <button 
