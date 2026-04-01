@@ -4,12 +4,11 @@ const KakaoAd: React.FC = () => {
   const adRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // SSR safe
     if (typeof window === 'undefined') return;
 
-    // Remove existing ad elements to avoid duplicates on remount
-    if (adRef.current) {
-      adRef.current.innerHTML = '';
+    const adContainer = adRef.current;
+    if (adContainer) {
+      adContainer.innerHTML = '';
       
       const ins = document.createElement('ins');
       ins.className = 'kakao_ad_area';
@@ -23,14 +22,13 @@ const KakaoAd: React.FC = () => {
       script.src = 'https://t1.daumcdn.net/kas/static/ba.min.js';
       script.async = true;
 
-      adRef.current.appendChild(ins);
-      adRef.current.appendChild(script);
+      adContainer.appendChild(ins);
+      adContainer.appendChild(script);
     }
 
     return () => {
-      // Optional: Cleanup if needed, but for AdFit it's better to just clear innerHTML
-      if (adRef.current) {
-        adRef.current.innerHTML = '';
+      if (adContainer) {
+        adContainer.innerHTML = '';
       }
     };
   }, []);

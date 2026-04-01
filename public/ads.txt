@@ -1,1 +1,2 @@
-google.com, pub-8764053427630602, DIRECT, f08c47fec0942fa0
+# Kakao AdFit (User should add their AdFit ID here if they have one)
+# kakao.com, [ADFIT_ID], DIRECT, f08c47fec0942fa0

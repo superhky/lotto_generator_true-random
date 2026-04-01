@@ -6,8 +6,9 @@ const KakaoAdVertical: React.FC = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    if (adRef.current) {
-      adRef.current.innerHTML = '';
+    const adContainer = adRef.current;
+    if (adContainer) {
+      adContainer.innerHTML = '';
       
       const ins = document.createElement('ins');
       ins.className = 'kakao_ad_area';
@@ -21,13 +22,13 @@ const KakaoAdVertical: React.FC = () => {
       script.src = 'https://t1.daumcdn.net/kas/static/ba.min.js';
       script.async = true;
 
-      adRef.current.appendChild(ins);
-      adRef.current.appendChild(script);
+      adContainer.appendChild(ins);
+      adContainer.appendChild(script);
     }
 
     return () => {
-      if (adRef.current) {
-        adRef.current.innerHTML = '';
+      if (adContainer) {
+        adContainer.innerHTML = '';
       }
     };
   }, []);
