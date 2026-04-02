@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lotto-generator-true-random.pages.dev/sitemap.xml
