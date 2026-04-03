@@ -121,8 +121,8 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-500/30 overflow-x-hidden">
-      {/* Desktop Side Ad (Visible on 1280px+ screens to avoid content overlap) */}
-      <div className="hidden xl:block fixed left-4 top-24 z-10">
+      {/* Desktop Side Ad (Visible on 1024px+ screens) */}
+      <div className="hidden lg:block fixed left-2 xl:left-6 top-24 z-10">
         <KakaoAdVertical />
       </div>
 
