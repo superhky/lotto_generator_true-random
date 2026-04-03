@@ -121,17 +121,9 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-500/30 overflow-x-hidden">
-      {/* Desktop Side Ads (Visible on 1024px+ screens) */}
-      <div className="hidden lg:block fixed left-4 top-24 z-10">
+      {/* Desktop Side Ad (Visible on 1280px+ screens to avoid content overlap) */}
+      <div className="hidden xl:block fixed left-4 top-24 z-10">
         <KakaoAdVertical />
-      </div>
-      <div className="hidden lg:block fixed right-4 top-24 z-10">
-        <KakaoAdVertical />
-      </div>
-
-      {/* Mobile Top Ad (Visible on small screens) */}
-      <div className="lg:hidden flex justify-center py-4 bg-slate-900/30 border-b border-slate-900">
-        <KakaoAd />
       </div>
 
       {/* Language Switcher Floating Button */}
@@ -237,15 +229,8 @@ const App: React.FC = () => {
           </AnimatePresence>
         </div>
 
-        {/* New 300x250 Rectangle Ad for all screens */}
+        {/* Ads Section (Avoid duplicate IDs for stability) */}
         <KakaoAdRectangle />
-
-        {/* Mobile-only Vertical Ad (Shown in flow) */}
-        <div className="lg:hidden mt-8">
-          <KakaoAdVertical />
-        </div>
-
-        {/* Review Ad Section */}
         <KakaoAd />
 
         {/* Educational Info Section */}
