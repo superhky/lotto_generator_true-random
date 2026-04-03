@@ -11,6 +11,7 @@ import {
 } from './utils/TRNGService';
 import KakaoAd from './components/KakaoAd';
 import KakaoAdVertical from './components/KakaoAdVertical';
+import KakaoAdRectangle from './components/KakaoAdRectangle';
 import InfoSection from './components/InfoSection';
 import { translations, type Language } from './utils/translations';
 
@@ -120,9 +121,17 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-500/30 overflow-x-hidden">
-      {/* Side Ads (Visible on Large Screens) - Only one instance during audit for clarity */}
-      <div className="hidden xl:block fixed left-4 top-24 z-10">
+      {/* Desktop Side Ads (Visible on 1024px+ screens) */}
+      <div className="hidden lg:block fixed left-4 top-24 z-10">
         <KakaoAdVertical />
+      </div>
+      <div className="hidden lg:block fixed right-4 top-24 z-10">
+        <KakaoAdVertical />
+      </div>
+
+      {/* Mobile Top Ad (Visible on small screens) */}
+      <div className="lg:hidden flex justify-center py-4 bg-slate-900/30 border-b border-slate-900">
+        <KakaoAd />
       </div>
 
       {/* Language Switcher Floating Button */}
@@ -228,7 +237,15 @@ const App: React.FC = () => {
           </AnimatePresence>
         </div>
 
-        {/* Ad for Review */}
+        {/* New 300x250 Rectangle Ad for all screens */}
+        <KakaoAdRectangle />
+
+        {/* Mobile-only Vertical Ad (Shown in flow) */}
+        <div className="lg:hidden mt-8">
+          <KakaoAdVertical />
+        </div>
+
+        {/* Review Ad Section */}
         <KakaoAd />
 
         {/* Educational Info Section */}
