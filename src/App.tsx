@@ -21,6 +21,7 @@ interface LottoSet {
   numbers: number[];
   icon: React.ReactNode;
   description: string;
+  isLoading: boolean;
 }
 
 const App: React.FC = () => {
@@ -47,54 +48,67 @@ const App: React.FC = () => {
   }, [userEntropy]);
 
   const generateAllNumbers = useCallback(async () => {
-    setIsGenerating(true);
-    
-    try {
-      const results: LottoSet[] = [
-        {
-          id: 'atmospheric',
-          source: '[Atmospheric Source]',
-          numbers: await getAtmosphericRandom(),
-          icon: <Radio className="text-blue-400" size={18} />,
-          description: t.sourceLabels.atmospheric
-        },
-        {
-          id: 'quantum',
-          source: '[Quantum Source]',
-          numbers: await getQuantumRandom(),
-          icon: <Zap className="text-purple-400" size={18} />,
-          description: t.sourceLabels.quantum
-        },
-        {
-          id: 'thermal',
-          source: '[Optical/Thermal Source]',
-          numbers: getOpticalThermalRandom(),
-          icon: <Thermometer className="text-red-400" size={18} />,
-          description: t.sourceLabels.thermal
-        },
-        {
-          id: 'jitter',
-          source: '[Hardware Jitter Source]',
-          numbers: getJitterRandom(),
-          icon: <RefreshCw className="text-green-400" size={18} />,
-          description: t.sourceLabels.jitter
-        },
-        {
-          id: 'user',
-          source: '[User Entropy Source]',
-          numbers: getUserEntropyRandom(userEntropy),
-          icon: <User className="text-orange-400" size={18} />,
-          description: t.sourceLabels.user
-        }
-      ];
+    console.log('generateAllNumbers: starting, hasGenerated:', hasGenerated);
+    setHasGenerated(false); // Reset generated state
+    console.log('generateAllNumbers: set hasGenerated to false');
 
-      setSets(results);
-    } catch (error) {
-      console.error("Failed to generate numbers:", error);
-    } finally {
-      setIsGenerating(false);
-      setHasGenerated(true);
-    }
+    const initialSets: LottoSet[] = [
+      { id: 'atmospheric', source: '[Atmospheric Source]', numbers: [], icon: <Radio className="text-blue-400" size={18} />, description: t.sourceLabels.atmospheric, isLoading: true },
+      { id: 'quantum', source: '[Quantum Source]', numbers: [], icon: <Zap className="text-purple-400" size={18} />, description: t.sourceLabels.quantum, isLoading: true },
+      { id: 'thermal', source: '[Optical/Thermal Source]', numbers: [], icon: <Thermometer className="text-red-400" size={18} />, description: t.sourceLabels.thermal, isLoading: true },
+      { id: 'jitter', source: '[Hardware Jitter Source]', numbers: [], icon: <RefreshCw className="text-green-400" size={18} />, description: t.sourceLabels.jitter, isLoading: true },
+      { id: 'user', source: '[User Entropy Source]', numbers: [], icon: <User className="text-orange-400" size={18} />, description: t.sourceLabels.user, isLoading: true },
+    ];
+    setSets(initialSets); // Set initial loading states
+    console.log('generateAllNumbers: initialSets set, sets length:', initialSets.length);
+
+    setIsGenerating(true); // Indicate overall generation started
+
+    // Fetch numbers for each source and update state individually
+    const results = await Promise.allSettled(initialSets.map(async (initialSet) => {
+      let numbers: number[] = [];
+      try {
+        if (initialSet.id === 'atmospheric') {
+          numbers = await getAtmosphericRandom();
+        } else if (initialSet.id === 'quantum') {
+          numbers = await getQuantumRandom();
+        } else if (initialSet.id === 'thermal') {
+          numbers = await getOpticalThermalRandom();
+        } else if (initialSet.id === 'jitter') {
+          numbers = getJitterRandom();
+        } else if (initialSet.id === 'user') {
+          numbers = getUserEntropyRandom(userEntropy);
+        }
+      } catch (error) {
+        console.error(`Failed to generate numbers for ${initialSet.id}:`, error);
+        // If an error occurs, return the initial set with numbers as empty and isLoading: false
+        return { ...initialSet, numbers: [], isLoading: false };
+      }
+      return { ...initialSet, numbers, isLoading: false };
+    }));
+
+    // Process the results from Promise.allSettled
+    const updatedSets: LottoSet[] = results.map(result => {
+      if (result.status === 'fulfilled') {
+        return result.value;
+      } else {
+        // If a promise was rejected, log the reason and return a default/failed state
+        console.error("Promise rejected:", result.reason);
+        // Find the corresponding initial set to retain its icon/description if possible
+        const failedInitialSet = initialSets.find(s => s.id === (result.reason?.id || 'unknown')); // Assuming reason might carry id for debugging
+        return { 
+          ...(failedInitialSet || { id: 'error', source: 'Error', icon: null, description: 'Generation Failed' }), // Fallback if initial set not found
+          numbers: [], 
+          isLoading: false 
+        };
+      }
+    });
+
+    setSets(updatedSets); // Update with final numbers and loading states
+    console.log('generateAllNumbers: updatedSets set, sets length:', updatedSets.length);
+    setIsGenerating(false); // Overall generation finished
+    setHasGenerated(true); // Mark as generated
+    console.log('generateAllNumbers: set hasGenerated to true');
   }, [userEntropy, t]);
 
   const handleStartGeneration = () => {
@@ -184,7 +198,9 @@ const App: React.FC = () => {
               </motion.div>
             ) : (
               <div className="space-y-6">
-                {sets.map((set, idx) => (
+                {sets.map((set, idx) => {
+                  console.log(set.id, set.numbers, typeof set.numbers); // DEBUG LOG
+                  return (
                   <motion.div
                     key={set.id}
                     initial={{ x: -20, opacity: 0 }}
@@ -205,25 +221,36 @@ const App: React.FC = () => {
                     </div>
 
                     <div className="flex flex-wrap gap-3 md:gap-4 justify-center md:justify-start">
-                      {set.numbers.map((num, nIdx) => (
+                      {set.isLoading ? (
                         <motion.div
-                          key={`${set.id}-${num}`}
-                          initial={{ scale: 0, rotate: -180 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          transition={{ 
-                            type: 'spring', 
-                            stiffness: 260, 
-                            damping: 20, 
-                            delay: idx * 0.15 + nIdx * 0.05 
-                          }}
-                          className={`lotto-ball ${getBallColor(num)} shadow-xl`}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="flex items-center gap-2 text-blue-300 italic p-4 rounded-xl bg-slate-800"
                         >
-                          {num}
+                          <RefreshCw className="animate-spin" size={20} />
+                          <span>{t.generatingNumbers}</span>
                         </motion.div>
-                      ))}
-                    </div>
-                  </motion.div>
-                ))}
+                      ) : (
+                        set.numbers.map((num, nIdx) => (
+                          <motion.div
+                            key={`${set.id}-${num}`}
+                            initial={{ scale: 0, rotate: -180 }}
+                            animate={{ scale: 1, rotate: 0 }}
+                            transition={{
+                              type: 'spring',
+                              stiffness: 260,
+                              damping: 20,
+                              delay: idx * 0.15 + nIdx * 0.05
+                            }}
+                            className={`lotto-ball ${getBallColor(num)} shadow-xl`}
+                          >
+                            {num}
+                          </motion.div>
+                        ))
+                      )}
+                    </div>                  </motion.div>
+                  ); // Corrected placement of return
+                })} {/* This closes the map function correctly */}
               </div>
             )}
           </AnimatePresence>

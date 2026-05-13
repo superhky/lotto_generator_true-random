@@ -64,7 +64,9 @@ export const getQuantumRandom = async (): Promise<number[]> => {
 };
 
 // Set 3: Optical/Thermal (CSPRNG via browser)
-export const getOpticalThermalRandom = (): number[] => {
+export const getOpticalThermalRandom = async (): Promise<number[]> => {
+  // Introduce an artificial delay for debugging loading state
+  await new Promise(resolve => setTimeout(resolve, 1500)); // 1.5 second delay
   // Browser's crypto.getRandomValues is based on entropy pools (hardware noise)
   return FALLBACK_CSPRNG();
 };

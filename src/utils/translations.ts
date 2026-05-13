@@ -10,6 +10,7 @@ export const translations = {
     heroSubtitle2: "예측 불가능한 행운의 조합을 생성합니다.",
     generateBtn: "번호 생성하기",
     generating: "추출 중...",
+    generatingNumbers: "번호 생성 중...",
     emptyPrompt: "버튼을 눌러 5가지 물리적 소스로부터 번호를 생성하세요.",
     sourceLabels: {
       atmospheric: "Random.org (대기 소음 잡음)",
@@ -63,6 +64,7 @@ export const translations = {
     heroSubtitle2: "we generate unpredictable lucky combinations.",
     generateBtn: "Generate Numbers",
     generating: "Generating...",
+    generatingNumbers: "Generating numbers...",
     emptyPrompt: "Click the button to generate numbers from 5 physical sources.",
     sourceLabels: {
       atmospheric: "Random.org (Atmospheric Noise)",
