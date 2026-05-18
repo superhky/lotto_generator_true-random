@@ -11,6 +11,7 @@ export const translations = {
     generateBtn: "번호 생성하기",
     generating: "추출 중...",
     generatingNumbers: "번호 생성 중...",
+    downloadImage: "결과 저장하고 공유하기",
     emptyPrompt: "버튼을 눌러 5가지 물리적 소스로부터 번호를 생성하세요.",
     sourceLabels: {
       atmospheric: "Random.org (대기 소음 잡음)",
@@ -65,6 +66,7 @@ export const translations = {
     generateBtn: "Generate Numbers",
     generating: "Generating...",
     generatingNumbers: "Generating numbers...",
+    downloadImage: "Save and Share Result",
     emptyPrompt: "Click the button to generate numbers from 5 physical sources.",
     sourceLabels: {
       atmospheric: "Random.org (Atmospheric Noise)",

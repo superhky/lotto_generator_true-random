@@ -1,7 +1,8 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Zap, Radio, Thermometer, User, RefreshCw, Languages, Shield, Info, Mail, X } from 'lucide-react';
+import { Sparkles, Zap, Radio, Thermometer, User, RefreshCw, Languages, Shield, Info, Mail, X, Download } from 'lucide-react';
+import { toBlob } from 'html-to-image';
 import { 
   getAtmosphericRandom, 
   getQuantumRandom, 
@@ -33,6 +34,7 @@ const App: React.FC = () => {
   const [hasGenerated, setHasGenerated] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+  const printRef = useRef<HTMLDivElement>(null);
 
   const t = translations[lang];
 
@@ -133,6 +135,62 @@ const App: React.FC = () => {
     setLang(prev => prev === 'ko' ? 'en' : 'ko');
   };
 
+  const handleDownloadImage = async () => {
+    if (!printRef.current) return;
+    
+    // 스타일을 일시적으로 추가하여 깔끔한 이미지 생성
+    const originalClass = printRef.current.className;
+    printRef.current.className = 'w-full space-y-6 p-6 rounded-3xl bg-slate-950 border border-slate-800';
+
+    try {
+      const imageBlob = await toBlob(printRef.current, {
+        backgroundColor: '#020617', // slate-950
+        pixelRatio: 2,
+      });
+      
+      // 원래 스타일로 복원
+      printRef.current.className = originalClass;
+
+      if (!imageBlob) throw new Error('Blob generation failed');
+
+      const fileName = `true-random-lotto-${new Date().toISOString().slice(0,10)}.png`;
+      const file = new File([imageBlob], fileName, { type: 'image/png' });
+
+      // 모바일 웹앱/브라우저를 위한 Web Share API 우선 시도
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            title: t.siteTitle,
+            text: '나의 양자역학 로또 번호! 🍀\n\n#로또 #양자역학로또 #TrueRandom',
+            files: [file],
+          });
+          return;
+        } catch (shareError: any) {
+          if (shareError.name !== 'AbortError') {
+            console.log('Share failed, falling back to download:', shareError);
+          } else {
+            return; // 사용자가 공유를 취소한 경우 그냥 리턴
+          }
+        }
+      }
+
+      // 데스크탑 또는 Share API 미지원 환경용 폴백 다운로드
+      const imageUrl = URL.createObjectURL(imageBlob);
+      const link = document.createElement('a');
+      link.href = imageUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(imageUrl);
+      
+    } catch (error) {
+      console.error('Error saving image:', error);
+      printRef.current.className = originalClass; // 에러 시 복원
+      alert('이미지 저장에 실패했습니다.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-500/30 overflow-x-hidden">
       {/* Desktop Side Ad (Visible on 1024px+ screens) */}
@@ -197,9 +255,14 @@ const App: React.FC = () => {
                 <p className="text-slate-500 italic">{t.emptyPrompt}</p>
               </motion.div>
             ) : (
-              <div className="space-y-6">
-                {sets.map((set, idx) => {
-                  console.log(set.id, set.numbers, typeof set.numbers); // DEBUG LOG
+              <div className="flex flex-col items-center space-y-8">
+                <div ref={printRef} className="w-full space-y-6 relative">
+                  {/* 워터마크 (공유된 이미지 출처 명시용) */}
+                  <div className="absolute top-4 right-6 opacity-20 pointer-events-none hidden md:block">
+                    <span className="font-black text-2xl italic tracking-tighter">TRUE RANDOM</span>
+                  </div>
+                  {sets.map((set, idx) => {
+                    console.log(set.id, set.numbers, typeof set.numbers); // DEBUG LOG
                   return (
                   <motion.div
                     key={set.id}
@@ -251,6 +314,19 @@ const App: React.FC = () => {
                     </div>                  </motion.div>
                   ); // Corrected placement of return
                 })} {/* This closes the map function correctly */}
+                </div>
+                
+                {/* 이미지 다운로드 / 공유 버튼 */}
+                <motion.button
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1 }}
+                  onClick={handleDownloadImage}
+                  className="flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full font-medium transition-all shadow-lg text-slate-300 hover:text-white"
+                >
+                  <Download size={18} className="text-blue-400" />
+                  {t.downloadImage}
+                </motion.button>
               </div>
             )}
           </AnimatePresence>
