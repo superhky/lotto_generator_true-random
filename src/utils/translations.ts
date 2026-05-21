@@ -12,13 +12,16 @@ export const translations = {
     generating: "추출 중...",
     generatingNumbers: "번호 생성 중...",
     downloadImage: "결과 저장하고 공유하기",
+    downloadImageOnly: "이미지 저장하기",
+    shareImageOnly: "공유하기",
+    shareText: "나의 양자역학 로또 번호! 🍀\n\n#로또 #양자역학로또 #TrueRandom\n",
     emptyPrompt: "버튼을 눌러 5가지 물리적 소스로부터 번호를 생성하세요.",
     sourceLabels: {
-      atmospheric: "Random.org (대기 소음 잡음)",
-      quantum: "ANU QRNG (양자 불확정성)",
-      thermal: "CSPRNG (열 잡음/하드웨어 노이즈)",
-      jitter: "Nano-Jitter (시스템 클록 미세 오차)",
-      user: "User Input (사용자 마우스 엔트로피)"
+      atmospheric: "대기 소음 잡음",
+      quantum: "양자 불확정성",
+      thermal: "열 잡음 및 하드웨어 노이즈",
+      jitter: "시스템 클록 미세 오차",
+      user: "사용자 마우스 엔트로피"
     },
     adTitle: "당신을 위한 최적의 정보",
     adSubtitle: "광고주의 웹사이트에서 더 많은 혜택을 확인해 보세요.",
@@ -67,13 +70,16 @@ export const translations = {
     generating: "Generating...",
     generatingNumbers: "Generating numbers...",
     downloadImage: "Save and Share Result",
+    downloadImageOnly: "Save Image",
+    shareImageOnly: "Share",
+    shareText: "My True Random Lotto Numbers! 🍀\n\n#Lotto #QuantumLotto #TrueRandom\n",
     emptyPrompt: "Click the button to generate numbers from 5 physical sources.",
     sourceLabels: {
-      atmospheric: "Random.org (Atmospheric Noise)",
-      quantum: "ANU QRNG (Quantum Indeterminacy)",
-      thermal: "CSPRNG (Thermal/Hardware Noise)",
-      jitter: "Nano-Jitter (System Clock Jitter)",
-      user: "User Input (Mouse Entropy)"
+      atmospheric: "Atmospheric Noise",
+      quantum: "Quantum Indeterminacy",
+      thermal: "Thermal & Hardware Noise",
+      jitter: "System Clock Jitter",
+      user: "User Mouse Entropy"
     },
     adTitle: "Optimized Information for You",
     adSubtitle: "Check out more benefits on the advertiser's website.",
