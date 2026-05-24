@@ -58,7 +58,7 @@ const App: React.FC = () => {
       { id: 'atmospheric', source: '[Atmospheric Source]', numbers: [], icon: <Radio className="text-blue-400" size={18} />, description: t.sourceLabels.atmospheric, isLoading: true },
       { id: 'quantum', source: '[Quantum Source]', numbers: [], icon: <Zap className="text-purple-400" size={18} />, description: t.sourceLabels.quantum, isLoading: true },
       { id: 'thermal', source: '[Optical/Thermal Source]', numbers: [], icon: <Thermometer className="text-red-400" size={18} />, description: t.sourceLabels.thermal, isLoading: true },
-      { id: 'jitter', source: '[Hardware Jitter Source]', numbers: [], icon: <RefreshCw className="text-green-400" size={18} />, description: t.sourceLabels.jitter, isLoading: true },
+      { id: 'jitter', source: '[Hardware Jitter Source]', numbers: [], icon: <RefreshCw className="text-green-400" size={14} />, description: t.sourceLabels.jitter, isLoading: true },
       { id: 'user', source: '[User Entropy Source]', numbers: [], icon: <User className="text-orange-400" size={18} />, description: t.sourceLabels.user, isLoading: true },
     ];
     setSets(initialSets); // Set initial loading states
@@ -137,8 +137,18 @@ const App: React.FC = () => {
 
   const handleAction = async (action: 'download' | 'share') => {
     if (!printRef.current) return;
-    
-    // 스타일을 일시적으로 추가하여 깔끔한 이미지 생성
+
+    // 공유: 단순히 페이지 URL만 공유
+    if (action === 'share') {
+      if (navigator.share) {
+        navigator.share({ title: t.siteTitle, url: window.location.href });
+      } else {
+        alert(lang === 'ko' ? '이 기기/브라우저에서는 공유 기능을 지원하지 않습니다.' : 'Sharing is not supported on this device/browser.');
+      }
+      return;
+    }
+
+    // 다운로드: 이미지를 자동으로 컴퓨터에 저장
     const originalClass = printRef.current.className;
     printRef.current.className = originalClass + ' !bg-slate-950';
 
@@ -147,37 +157,10 @@ const App: React.FC = () => {
         backgroundColor: '#020617', // slate-950
         pixelRatio: 2,
       });
-      
-      // 원래 스타일로 복원
-      printRef.current.className = originalClass;
 
       if (!imageBlob) throw new Error('Blob generation failed');
 
       const fileName = `true-random-lotto-${new Date().toISOString().slice(0,10)}.png`;
-      const file = new File([imageBlob], fileName, { type: 'image/png' });
-
-      if (action === 'share') {
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            await navigator.share({
-              title: t.siteTitle,
-              text: (t as any).shareText + window.location.origin,
-              files: [file],
-            });
-            return;
-          } catch (shareError: any) {
-            if (shareError.name !== 'AbortError') {
-              console.log('Share failed, falling back to download:', shareError);
-            } else {
-              return; // 사용자가 공유를 취소한 경우 그냥 리턴
-            }
-          }
-        } else {
-          alert(lang === 'ko' ? '이 기기/브라우저에서는 직접 공유 기능을 지원하지 않아, 이미지를 저장합니다.' : 'Direct share is not supported on this device/browser. Saving image instead.');
-        }
-      }
-
-      // 무조건 다운로드 실행
       const imageUrl = URL.createObjectURL(imageBlob);
       const link = document.createElement('a');
       link.href = imageUrl;
@@ -186,11 +169,13 @@ const App: React.FC = () => {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(imageUrl);
-      
     } catch (error) {
       console.error('Error saving image:', error);
-      printRef.current.className = originalClass; // 에러 시 복원
       alert(lang === 'ko' ? '이미지 처리에 실패했습니다.' : 'Failed to process image.');
+    } finally {
+      if (printRef.current) {
+        printRef.current.className = originalClass;
+      }
     }
   };
 
@@ -266,7 +251,7 @@ const App: React.FC = () => {
                     <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/10 blur-2xl rounded-full pointer-events-none"></div>
                     <div className="relative z-10 w-full mt-2 overflow-visible">
                       <h2 className="text-[13px] sm:text-[16px] md:text-2xl lg:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-2xl tracking-tight whitespace-nowrap mx-auto">
-                        {lang === 'ko' ? '✨ 세상에 단 하나뿐인 당신만의 양자역학 행운 번호' : '✨ Your Unique Quantum Lucky Numbers'}
+                        {lang === 'ko' ? '✨ 5가지 물리적 소스를 기반으로 한 오늘 당신의 행운 번호' : '✨ Your Unique Lucky Numbers from 5 Physical Sources'}
                       </h2>
                     </div>
                     <div className="relative z-10 flex items-center justify-center gap-3 w-full pb-2">
@@ -346,40 +331,39 @@ const App: React.FC = () => {
                             );
                           }
 
-                          let svgPath = "";
-                          let fillClass = "";
                           let scale = 1;
                           let rotation = 0;
                           let textYOffset = "";
+                          let svgPath = "";
+                          let fillStyle: React.CSSProperties = {};
 
                           switch (set.id) {
                             case 'atmospheric':
-                                                            svgPath = "M6 18a4 4 0 0 1-1.5-7.7 7 7 0 1 1 13 1.8 3.5 3.5 0 0 1-2.5 5.9H6z";
-                              fillClass = "fill-gray-200 drop-shadow-[0_4px_8px_rgba(200,200,200,0.5)]";
+                              // atmospheric (cloud) symbol
+                              svgPath = "M6 18a4 4 0 0 1-1.5-7.7 7 7 0 1 1 13 1.8 3.5 3.5 0 0 1-2.5 5.9H6z";
+                              fillStyle = { fill: "#f3f4f6" };
                               scale = 1.6;
                               textYOffset = "mt-1";
-
                               break;
                             case 'thermal':
-                              // flame shape
+                              // thermal (flame) symbol
                               svgPath = "M12 2 C12 2, 4 9, 4 14 C4 18, 7 22, 12 22 C17 22, 20 18, 20 14 C20 9, 12 2, 12 2 Z";
-                              fillClass = "fill-red-600 drop-shadow-[0_0_12px_rgba(220,38,38,0.9)]";
+                              fillStyle = { fill: "#dc2626" };
                               scale = 1.8;
                               textYOffset = "mt-2";
                               break;
                             case 'jitter':
                               // gear (톱니바퀴) icon
-                              svgPath = "M12 2a1 1 0 0 1 .983.822l.117.468a5.5 5.5 0 0 1 2.018.97l.405-.236a1 1 0 0 1 1.133.225l.707.707a1 1 0 0 1 .225 1.133l-.236 .405a5.5 5.5 0 0 1 .97 2.018l.468 .117a1 1 0 0 1 .822 .983V12a1 1 0 0 1-.822 .983l-.468 .117a5.5 5.5 0 0 1-.97 2.018l.236 .405a1 1 0 0 1-.225 1.133l-.707 .707a1 1 0 0 1-1.133 .225l-.405-.236a5.5 5.5 0 0 1-2.018 .97l-.117 .468a1 1 0 0 1-.983 .822H12a1 1 0 0 1-.983-.822l-.117-.468a5.5 5.5 0 0 1-2.018-.97l-.405 .236a1 1 0 0 1-1.133-.225l-.707-.707a1 1 0 0 1-.225-1.133l.236-.405a5.5 5.5 0 0 1-.97-2.018l-.468-.117A1 1 0 0 1 5 12V12a1 1 0 0 1 .822-.983l.468-.117a5.5 5.5 0 0 1 .97-2.018l-.236-.405a1 1 0 0 1 .225-1.133l.707-.707a1 1 0 0 1 1.133-.225l.405 .236a5.5 5.5 0 0 1 2.018-.97l.117-.468A1 1 0 0 1 12 2z";
-                              fillClass = "fill-slate-500 drop-shadow-[0_4px_6px_rgba(0,0,0,0.7)]";
-                              scale = 1.6;
+                              svgPath = "M12 2a1 1 0 0 1 .983.822l.117.468a5.5 5.5 0 0 1 2.018.97l.405-.236a1 1 0 0 1 1.133.225l.707.707a1 1 0 0 1 .225 1.133l-.236 .405a5.5 5.5 0 0 1-.95 2.018l.468 .117a1 1 0 0 1 .822 .983V12a1 1 0 0 1-.822 .983l-.468 .117a5.5 5.5 0 0 1-.97 2.018l.236 .405a1 1 0 0 1-.225 1.133l-.707 .707a1 1 0 0 1-1.133 .225l-.405-.236a5.5 5.5 0 0 1-2.018 .97l-.117 .468a1 1 0 0 1-.983 .822H12a1 1 0 0 1-.983-.822l-.117-.468a5.5 5.5 0 0 1-2.018-.97l-.405 .236a1 1 0 0 1-1.133-.225l-.707-.707a1 1 0 0 1-.225-1.133l.236-.405a5.5 5.5 0 0 1-.97-2.018l-.468-.117A1 1 0 0 1 5 12V12a1 1 0 0 1 .822-.983l.468-.117a5.5 5.5 0 0 1 .97-2.018l-.236-.405a1 1 0 0 1 .225-1.133l.707-.707a1 1 0 0 1 1.133-.225l.405 .236a5.5 5.5 0 0 1 2.018-.97l.117-.468A1 1 0 0 1 12 2z";
+                              fillStyle = { fill: "#ffbf00" };
+                              scale = 2.0;
                               textYOffset = "mt-0";
                               break;
                             case 'user':
-                              // mouse silhouette shape
+                              // mouse-shaped user entropy symbol
                               svgPath = "M8 2C5.8 2 4 3.8 4 6V18C4 20.2 5.8 22 8 22H16C18.2 22 20 20.2 20 18V6C20 3.8 18.2 2 16 2H8zM8 4H16C17.1 4 18 4.9 18 6V10H6V6C6 4.9 6.9 4 8 4Z";
-                              fillClass = "fill-white drop-shadow-[0_4px_8px_rgba(255,255,255,0.4)]";
-                              scale = 1.3;
-                              rotation = -10;
+                              fillStyle = { fill: "#ffffff" };
+                              scale = 1.6;
                               textYOffset = "mt-2 mr-1";
                               break;
                           }
@@ -394,9 +378,9 @@ const App: React.FC = () => {
                               className="w-10 h-10 flex items-center justify-center relative z-10"
                             >
                               <svg viewBox="0 0 24 24" className="absolute inset-0 w-full h-full pointer-events-none" style={{ transform: `scale(${scale}) rotate(${rotation}deg)` }}>
-                                <path d={svgPath} className={fillClass} />
+                                <path d={svgPath} style={fillStyle} />
                               </svg>
-                              <span className={`z-20 relative font-black text-[22px] text-slate-900 ${textYOffset}`}>{num}</span>
+                              <span className={`z-20 relative font-black text-[22px] text-black ${textYOffset}`}>{num}</span>
                               {set.id === 'quantum' && (
                                 <div className={`absolute bottom-[-2px] right-[-4px] w-4 h-4 rounded-full border-[1.5px] border-slate-900 shadow-xl z-30 ${baseColorClass}`}></div>
                               )}
@@ -421,9 +405,9 @@ const App: React.FC = () => {
                        </h1>
                        <div className="flex items-center gap-3 bg-black/40 px-6 py-2 rounded-full border border-white/10 backdrop-blur-md shadow-2xl">
                          <div className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_12px_rgba(74,222,128,0.9)]"></div>
-                         <span className="text-blue-100 text-sm md:text-lg font-mono font-bold tracking-widest">
-                           {typeof window !== 'undefined' ? window.location.host : 'true-random-lotto.com'}
-                         </span>
+                         <a href={typeof window !== 'undefined' ? window.location.href : '#'} className="text-blue-100 text-sm md:text-lg font-mono font-bold tracking-widest underline" target="_blank" rel="noopener noreferrer">
+                           {typeof window !== 'undefined' ? window.location.href : 'https://true-random-lotto.com'}
+                         </a>
                        </div>
                      </div>
                   </div>
@@ -444,7 +428,7 @@ const App: React.FC = () => {
                     {(t as any).downloadImageOnly || '이미지 저장하기'}
                   </button>
                   <button
-                    onClick={() => handleAction('share')}
+                    onClick={() => { if (navigator.share) { navigator.share({ title: t.siteTitle, url: typeof window !== 'undefined' ? window.location.href : undefined }); } else { alert('Sharing not supported'); } }}
                     className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 rounded-full font-medium transition-all shadow-lg text-blue-300 hover:text-white w-full sm:w-auto"
                   >
                     <Share2 size={18} className="text-blue-400" />
