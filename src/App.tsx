@@ -3,12 +3,12 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Zap, Radio, Thermometer, User, RefreshCw, Languages, Shield, Info, Mail, X, Download, Share2 } from 'lucide-react';
 import { toBlob } from 'html-to-image';
-import { 
-  getAtmosphericRandom, 
-  getQuantumRandom, 
-  getOpticalThermalRandom, 
-  getJitterRandom, 
-  getUserEntropyRandom 
+import {
+  getAtmosphericRandom,
+  getQuantumRandom,
+  getOpticalThermalRandom,
+  getJitterRandom,
+  getUserEntropyRandom
 } from './utils/TRNGService';
 import KakaoAd from './components/KakaoAd';
 import KakaoAdVertical from './components/KakaoAdVertical';
@@ -98,10 +98,10 @@ const App: React.FC = () => {
         console.error("Promise rejected:", result.reason);
         // Find the corresponding initial set to retain its icon/description if possible
         const failedInitialSet = initialSets.find(s => s.id === (result.reason?.id || 'unknown')); // Assuming reason might carry id for debugging
-        return { 
+        return {
           ...(failedInitialSet || { id: 'error', source: 'Error', icon: null, description: 'Generation Failed' }), // Fallback if initial set not found
-          numbers: [], 
-          isLoading: false 
+          numbers: [],
+          isLoading: false
         };
       }
     });
@@ -138,10 +138,28 @@ const App: React.FC = () => {
   const handleAction = async (action: 'download' | 'share') => {
     if (!printRef.current) return;
 
-    // 공유: 단순히 페이지 URL만 공유
+    // 공유: 생성된 로또 번호와 URL 공유
     if (action === 'share') {
+      if (!hasGenerated) {
+        alert(lang === 'ko' ? '번호를 먼저 생성해주세요!' : 'Please generate numbers first!');
+        return;
+      }
+
+      const generatedNumbersText = sets.map(set => {
+        if (set.numbers && set.numbers.length > 0) {
+          return `${set.description}: ${set.numbers.join(', ')}`;
+        }
+        return '';
+      }).filter(Boolean).join('\n');
+
+      const shareContent = {
+        title: t.siteTitle,
+        text: `${t.shareText}\n${generatedNumbersText}`,
+        url: window.location.href,
+      };
+
       if (navigator.share) {
-        navigator.share({ title: t.siteTitle, url: window.location.href });
+        navigator.share(shareContent);
       } else {
         alert(lang === 'ko' ? '이 기기/브라우저에서는 공유 기능을 지원하지 않습니다.' : 'Sharing is not supported on this device/browser.');
       }
@@ -188,7 +206,7 @@ const App: React.FC = () => {
 
       {/* Language Switcher Floating Button */}
       <div className="fixed top-6 right-6 z-40">
-        <button 
+        <button
           onClick={toggleLang}
           className="flex items-center gap-2 bg-slate-900/80 backdrop-blur-md border border-slate-700 px-4 py-2 rounded-full hover:bg-slate-800 transition-all text-sm font-medium shadow-lg"
         >
@@ -200,7 +218,7 @@ const App: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4 py-12">
         {/* Header */}
         <header className="text-center space-y-4 mb-12">
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium"
@@ -235,7 +253,7 @@ const App: React.FC = () => {
         <div className="space-y-6">
           <AnimatePresence mode="wait">
             {!hasGenerated ? (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="text-center p-12 border-2 border-dashed border-slate-800 rounded-3xl"
@@ -394,7 +412,7 @@ const App: React.FC = () => {
                   );
                 })}
                   </div>
-                  
+
                   {/* High Impact Photo Card Footer */}
                   <div className="bg-gradient-to-r from-blue-900 to-indigo-950 p-6 flex flex-col items-center justify-center relative overflow-hidden">
                      {/* subtle pattern overlay */}
@@ -412,7 +430,7 @@ const App: React.FC = () => {
                      </div>
                   </div>
                 </div>
-                
+
                 {/* 이미지 다운로드 / 공유 버튼 */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -451,7 +469,7 @@ const App: React.FC = () => {
         <footer className="mt-20 text-center text-slate-600 text-sm border-t border-slate-900 pt-8 pb-12">
           <p>{t.footer.rights}</p>
           <p className="mt-2">{t.footer.warning}</p>
-          
+
           <div className="flex flex-wrap justify-center gap-6 mt-8">
             <button onClick={() => setShowPrivacy(true)} className="hover:text-slate-400 transition-colors flex items-center gap-1">
               <Shield size={14} /> {t.footer.privacy}
@@ -469,13 +487,13 @@ const App: React.FC = () => {
       {/* Privacy Policy Modal */}
       <AnimatePresence>
         {showPrivacy && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
           >
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               className="bg-slate-900 border border-slate-700 max-w-2xl w-full rounded-3xl overflow-hidden shadow-2xl"
@@ -506,13 +524,13 @@ const App: React.FC = () => {
       {/* Terms of Service Modal */}
       <AnimatePresence>
         {showTerms && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
           >
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               className="bg-slate-900 border border-slate-700 max-w-2xl w-full rounded-3xl overflow-hidden shadow-2xl"

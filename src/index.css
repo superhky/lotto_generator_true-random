@@ -21,7 +21,7 @@ body {
 }
 
 /* Color schemes for lotto balls */
-.ball-1 { @apply bg-yellow-500 text-slate-900; }
+.ball-1 { @apply bg-yellow-500 text-white; }
 .ball-10 { @apply bg-blue-500 text-white; }
 .ball-20 { @apply bg-red-500 text-white; }
 .ball-30 { @apply bg-slate-500 text-white; }
