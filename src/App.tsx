@@ -50,9 +50,9 @@ const App: React.FC = () => {
   }, [userEntropy]);
 
   const generateAllNumbers = useCallback(async () => {
-    console.log('generateAllNumbers: starting, hasGenerated:', hasGenerated);
     setHasGenerated(false); // Reset generated state
-    console.log('generateAllNumbers: set hasGenerated to false');
+    setShowGenerationAnimation(true); // Start showing generation animation
+    setIsGenerating(true); // Indicate overall generation started
 
     const initialSets: LottoSet[] = [
       { id: 'atmospheric', source: '[Atmospheric Source]', numbers: [], icon: <Radio className="text-blue-400" size={18} />, description: t.sourceLabels.atmospheric, isLoading: true },
@@ -62,11 +62,8 @@ const App: React.FC = () => {
       { id: 'user', source: '[User Entropy Source]', numbers: [], icon: <User className="text-orange-400" size={18} />, description: t.sourceLabels.user, isLoading: true },
     ];
     setSets(initialSets); // Set initial loading states
-    console.log('generateAllNumbers: initialSets set, sets length:', initialSets.length);
 
-    setIsGenerating(true); // Indicate overall generation started
-
-    // Fetch numbers for each source and update state individually
+    // Fetch numbers for each source in parallel
     const results = await Promise.allSettled(initialSets.map(async (initialSet) => {
       let numbers: number[] = [];
       try {
@@ -83,23 +80,26 @@ const App: React.FC = () => {
         }
       } catch (error) {
         console.error(`Failed to generate numbers for ${initialSet.id}:`, error);
-        // If an error occurs, return the initial set with numbers as empty and isLoading: false
         return { ...initialSet, numbers: [], isLoading: false };
       }
       return { ...initialSet, numbers, isLoading: false };
     }));
 
-    // Process the results from Promise.allSettled
+    // Introduce artificial delay for animation
+    const minDelay = 5000; // 5 seconds
+    const maxDelay = 10000; // 10 seconds
+    const randomDelay = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
+    await new Promise(resolve => setTimeout(resolve, randomDelay));
+
+    // Process the results from Promise.allSettled after the delay
     const updatedSets: LottoSet[] = results.map(result => {
       if (result.status === 'fulfilled') {
         return result.value;
       } else {
-        // If a promise was rejected, log the reason and return a default/failed state
         console.error("Promise rejected:", result.reason);
-        // Find the corresponding initial set to retain its icon/description if possible
-        const failedInitialSet = initialSets.find(s => s.id === (result.reason?.id || 'unknown')); // Assuming reason might carry id for debugging
+        const failedInitialSet = initialSets.find(s => s.id === (result.reason?.id || 'unknown'));
         return {
-          ...(failedInitialSet || { id: 'error', source: 'Error', icon: null, description: 'Generation Failed' }), // Fallback if initial set not found
+          ...(failedInitialSet || { id: 'error', source: 'Error', icon: null, description: 'Generation Failed' }),
           numbers: [],
           isLoading: false
         };
@@ -107,10 +107,9 @@ const App: React.FC = () => {
     });
 
     setSets(updatedSets); // Update with final numbers and loading states
-    console.log('generateAllNumbers: updatedSets set, sets length:', updatedSets.length);
-    setIsGenerating(false); // Overall generation finished
     setHasGenerated(true); // Mark as generated
-    console.log('generateAllNumbers: set hasGenerated to true');
+    setIsGenerating(false); // Overall generation finished
+    setShowGenerationAnimation(false); // Stop showing generation animation
   }, [userEntropy, t]);
 
   const handleStartGeneration = () => {
