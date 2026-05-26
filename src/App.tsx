@@ -446,7 +446,7 @@ const App: React.FC = () => {
                     {(t as any).downloadImageOnly || '이미지 저장하기'}
                   </button>
                   <button
-                    onClick={() => { if (navigator.share) { navigator.share({ title: t.siteTitle, url: typeof window !== 'undefined' ? window.location.href : undefined }); } else { alert('Sharing not supported'); } }}
+                    onClick={() => handleAction('share')}
                     className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 rounded-full font-medium transition-all shadow-lg text-blue-300 hover:text-white w-full sm:w-auto"
                   >
                     <Share2 size={18} className="text-blue-400" />
