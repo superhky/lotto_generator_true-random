@@ -252,8 +252,28 @@ const App: React.FC = () => {
         {/* Lotto Sets Display */}
         <div className="space-y-6">
           <AnimatePresence mode="wait">
-            {!hasGenerated ? (
+            {showGenerationAnimation ? (
+              // NEW: Generation Animation Component
               <motion.div
+                key="generation-animation"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-center p-12 border-2 border-dashed border-slate-800 rounded-3xl min-h-[300px] flex items-center justify-center"
+              >
+                <motion.p
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  transition={{ repeat: Infinity, duration: 0.8, repeatType: "mirror" }}
+                  className="text-blue-400 italic text-xl flex items-center gap-3"
+                >
+                  <Zap className="animate-pulse" size={24} />
+                  {t.generating} {t.generatingNumbers}
+                </motion.p>
+              </motion.div>
+            ) : !hasGenerated ? (
+              <motion.div
+                key="empty-prompt"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="text-center p-12 border-2 border-dashed border-slate-800 rounded-3xl"
