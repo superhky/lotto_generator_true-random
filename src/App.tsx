@@ -29,6 +29,7 @@ const App: React.FC = () => {
   const [lang, setLang] = useState<Language>('ko');
   const [sets, setSets] = useState<LottoSet[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showGenerationAnimation, setShowGenerationAnimation] = useState(false);
   // const [isAdOpen, setIsAdOpen] = useState(false); // 심사 중 미사용
   const [userEntropy, setUserEntropy] = useState<number[]>([]);
   const [hasGenerated, setHasGenerated] = useState(false);
@@ -260,6 +261,7 @@ const App: React.FC = () => {
                 exit={{ opacity: 0 }}
                 className="text-center p-12 border-2 border-dashed border-slate-800 rounded-3xl min-h-[300px] flex items-center justify-center"
               >
+
                 <motion.p
                   initial={{ scale: 0.9 }}
                   animate={{ scale: 1 }}
@@ -277,6 +279,7 @@ const App: React.FC = () => {
                 animate={{ opacity: 1 }}
                 className="text-center p-12 border-2 border-dashed border-slate-800 rounded-3xl"
               >
+
                 <p className="text-slate-500 italic">{t.emptyPrompt}</p>
               </motion.div>
             ) : (
