@@ -116,17 +116,69 @@ const CategoryAnimation = ({ id, t }: { id: string, t: any }) => {
   }
 };
 
+const WealthLuckIndicator = ({ luck, t }: { luck: number, t: any }) => {
+  let message = '';
+  let colorClass = '';
+  let barColor = '';
+  
+  if (luck >= 90) {
+    message = t.wealthLuck.level4;
+    colorClass = 'text-red-400';
+    barColor = 'bg-red-500';
+  } else if (luck >= 70) {
+    message = t.wealthLuck.level3;
+    colorClass = 'text-yellow-400';
+    barColor = 'bg-yellow-500';
+  } else if (luck >= 40) {
+    message = t.wealthLuck.level2;
+    colorClass = 'text-blue-400';
+    barColor = 'bg-blue-500';
+  } else {
+    message = t.wealthLuck.level1;
+    colorClass = 'text-slate-400';
+    barColor = 'bg-slate-500';
+  }
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="max-w-md mx-auto mb-10 p-6 bg-slate-900/60 border border-slate-800 rounded-3xl shadow-xl backdrop-blur-sm text-center"
+    >
+      <h3 className="text-lg font-bold text-slate-300 mb-4">{t.wealthLuck.title}</h3>
+      <div className="relative h-6 bg-slate-800 rounded-full overflow-hidden mb-4 shadow-inner">
+        <motion.div 
+          initial={{ width: 0 }}
+          animate={{ width: `${luck}%` }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+          className={`absolute top-0 left-0 h-full ${barColor} shadow-[0_0_15px_rgba(0,0,0,0.5)]`}
+        />
+        <div className="absolute inset-0 flex items-center justify-center font-black text-xs text-white drop-shadow-md z-10">
+          {luck}%
+        </div>
+      </div>
+      <p className={`font-medium ${colorClass} break-keep`}>{message}</p>
+    </motion.div>
+  );
+};
+
 const App: React.FC = () => {
   const [lang, setLang] = useState<Language>('ko');
   const [sets, setSets] = useState<LottoSet[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   // const [isAdOpen, setIsAdOpen] = useState(false); // 심사 중 미사용
   const [userEntropy, setUserEntropy] = useState<number[]>([]);
+  const [wealthLuck, setWealthLuck] = useState<number | null>(null);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
 
   const t = translations[lang];
+
+  useEffect(() => {
+    // Generate a momentary wealth luck score between 1 and 100 on load
+    setWealthLuck(Math.floor(Math.random() * 100) + 1);
+  }, []);
 
   // Collect user entropy from mouse movements
   useEffect(() => {
@@ -302,6 +354,9 @@ const App: React.FC = () => {
             {t.heroSubtitle2}
           </p>
         </header>
+
+        {/* Wealth Luck Indicator */}
+        {wealthLuck !== null && <WealthLuckIndicator luck={wealthLuck} t={t} />}
 
         {/* Generation Trigger */}
         <div className="flex justify-center my-12">

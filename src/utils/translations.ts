@@ -16,6 +16,13 @@ export const translations = {
     shareImageOnly: "공유하기",
     shareText: "나의 로또 번호! 🍀\n\n#로또 #TrueRandom\n",
     emptyPrompt: "버튼을 눌러 5가지 물리적 소스로부터 번호를 생성하세요.",
+    wealthLuck: {
+      title: "지금 이 순간 당신의 재물운은?",
+      level4: "🔥 대박 기운! 지금 당장 번호를 생성하세요!",
+      level3: "✨ 흐름이 아주 좋습니다! 행운이 따를지도 모릅니다.",
+      level2: "👍 평온한 상태입니다. 직감에 맡겨보세요.",
+      level1: "😅 잠시 기운을 모으고 다시 시도해보는 건 어떨까요?",
+    },
     sourceLabels: {
       atmospheric: "대기 잡음",
       quantum: "양자 불확정성",
@@ -75,6 +82,13 @@ export const translations = {
     shareImageOnly: "Share",
     shareText: "My True Random Lotto Numbers! 🍀\n\n#Lotto #QuantumLotto #TrueRandom\n",
     emptyPrompt: "Click the button to generate numbers from 5 physical sources.",
+    wealthLuck: {
+      title: "Your Wealth Luck at This Exact Moment",
+      level4: "🔥 Huge energy! Generate numbers right now!",
+      level3: "✨ Great flow! Luck might be on your side.",
+      level2: "👍 Peaceful state. Trust your intuition.",
+      level1: "😅 How about gathering energy and trying again in a bit?",
+    },
     sourceLabels: {
       atmospheric: "Atmospheric Noise",
       quantum: "Quantum Indeterminacy",
