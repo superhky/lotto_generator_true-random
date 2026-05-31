@@ -25,14 +25,103 @@ interface LottoSet {
   isLoading: boolean;
 }
 
+const CategoryAnimation = ({ id, t }: { id: string, t: any }) => {
+  switch (id) {
+    case 'atmospheric':
+      return (
+        <div className="flex gap-2 h-10 items-center justify-center p-4">
+          {[...Array(5)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="w-2.5 bg-blue-400 rounded-full"
+              animate={{ height: ['20%', '100%', '20%'] }}
+              transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.15 }}
+            />
+          ))}
+          <span className="ml-3 text-blue-400 font-bold italic">{t.generatingNumbers || '생성 중...'}</span>
+        </div>
+      );
+    case 'quantum':
+      return (
+        <div className="relative w-48 h-12 flex justify-center items-center overflow-hidden">
+          {[...Array(12)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-purple-400 rounded-full shadow-[0_0_8px_#a855f7]"
+              initial={{ x: 0, y: 0, opacity: 0 }}
+              animate={{
+                x: (Math.random() - 0.5) * 160,
+                y: (Math.random() - 0.5) * 40,
+                opacity: [0, 1, 0],
+                scale: [0, 1.5, 0]
+              }}
+              transition={{ duration: 0.6, repeat: Infinity, delay: Math.random() }}
+            />
+          ))}
+          <span className="z-10 text-purple-300 font-bold italic">{t.generatingNumbers || '생성 중...'}</span>
+        </div>
+      );
+    case 'thermal':
+      return (
+        <div className="flex justify-center items-end h-12 gap-1.5 p-2 w-48">
+          {[...Array(8)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="w-3 rounded-t-full"
+              style={{ background: 'linear-gradient(to top, #ea580c, #ef4444, #fcd34d)' }}
+              animate={{ height: ['30%', `${Math.random() * 60 + 40}%`, '30%'] }}
+              transition={{ duration: 0.4, repeat: Infinity, delay: i * 0.1, repeatType: 'mirror' }}
+            />
+          ))}
+          <span className="ml-2 text-red-400 font-bold italic self-center">{t.generatingNumbers || '생성 중...'}</span>
+        </div>
+      );
+    case 'jitter':
+      return (
+        <div className="flex items-center justify-center gap-3 p-3">
+          <motion.div
+            animate={{ x: [-2, 2, -2, 2, 0], y: [1, -1, 1, -1, 0] }}
+            transition={{ duration: 0.2, repeat: Infinity }}
+            className="text-green-400 font-mono font-bold text-xl tracking-widest drop-shadow-[0_0_5px_#4ade80]"
+          >
+            010110
+          </motion.div>
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+          >
+            <RefreshCw className="text-green-400" size={24} />
+          </motion.div>
+        </div>
+      );
+    case 'user':
+      return (
+        <div className="relative w-48 h-12 flex justify-center items-center border border-orange-500/30 rounded-lg bg-orange-900/20 overflow-hidden">
+          <motion.div
+            animate={{ 
+              x: [-40, 40, 20, -30, -40],
+              y: [-10, 15, -15, 10, -10]
+            }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute"
+          >
+            <User size={20} className="text-orange-400" />
+          </motion.div>
+          <div className="w-full h-full absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_center,_#f97316_0%,_transparent_60%)] animate-pulse"></div>
+          <span className="z-10 text-orange-300 font-bold italic ml-6">{t.generatingNumbers || '생성 중...'}</span>
+        </div>
+      );
+    default:
+      return null;
+  }
+};
+
 const App: React.FC = () => {
   const [lang, setLang] = useState<Language>('ko');
   const [sets, setSets] = useState<LottoSet[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [showGenerationAnimation, setShowGenerationAnimation] = useState(false);
   // const [isAdOpen, setIsAdOpen] = useState(false); // 심사 중 미사용
   const [userEntropy, setUserEntropy] = useState<number[]>([]);
-  const [hasGenerated, setHasGenerated] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
@@ -51,8 +140,6 @@ const App: React.FC = () => {
   }, [userEntropy]);
 
   const generateAllNumbers = useCallback(async () => {
-    setHasGenerated(false); // Reset generated state
-    setShowGenerationAnimation(true); // Start showing generation animation
     setIsGenerating(true); // Indicate overall generation started
 
     const initialSets: LottoSet[] = [
@@ -64,53 +151,33 @@ const App: React.FC = () => {
     ];
     setSets(initialSets); // Set initial loading states
 
-    // Fetch numbers for each source in parallel
-    const results = await Promise.allSettled(initialSets.map(async (initialSet) => {
-      let numbers: number[] = [];
-      try {
-        if (initialSet.id === 'atmospheric') {
-          numbers = await getAtmosphericRandom();
-        } else if (initialSet.id === 'quantum') {
-          numbers = await getQuantumRandom();
-        } else if (initialSet.id === 'thermal') {
-          numbers = await getOpticalThermalRandom();
-        } else if (initialSet.id === 'jitter') {
-          numbers = getJitterRandom();
-        } else if (initialSet.id === 'user') {
-          numbers = getUserEntropyRandom(userEntropy);
+    // Generate sequentially
+    for (const setDef of initialSets) {
+      // Create fetch promise to run in background
+      const fetchPromise = (async () => {
+        try {
+          if (setDef.id === 'atmospheric') return await getAtmosphericRandom();
+          if (setDef.id === 'quantum') return await getQuantumRandom();
+          if (setDef.id === 'thermal') return await getOpticalThermalRandom();
+          if (setDef.id === 'jitter') return getJitterRandom();
+          if (setDef.id === 'user') return getUserEntropyRandom(userEntropy);
+          return [];
+        } catch (error) {
+          console.error(`Failed: ${setDef.id}`, error);
+          return [];
         }
-      } catch (error) {
-        console.error(`Failed to generate numbers for ${initialSet.id}:`, error);
-        return { ...initialSet, numbers: [], isLoading: false };
-      }
-      return { ...initialSet, numbers, isLoading: false };
-    }));
+      })();
 
-    // Introduce artificial delay for animation
-    const minDelay = 5000; // 5 seconds
-    const maxDelay = 10000; // 10 seconds
-    const randomDelay = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
-    await new Promise(resolve => setTimeout(resolve, randomDelay));
+      // Artificial wait for animation (5000ms per category)
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      
+      const numbers = await fetchPromise;
 
-    // Process the results from Promise.allSettled after the delay
-    const updatedSets: LottoSet[] = results.map(result => {
-      if (result.status === 'fulfilled') {
-        return result.value;
-      } else {
-        console.error("Promise rejected:", result.reason);
-        const failedInitialSet = initialSets.find(s => s.id === (result.reason?.id || 'unknown'));
-        return {
-          ...(failedInitialSet || { id: 'error', source: 'Error', icon: null, description: 'Generation Failed' }),
-          numbers: [],
-          isLoading: false
-        };
-      }
-    });
+      // Update state for this set
+      setSets(prev => prev.map(s => s.id === setDef.id ? { ...s, numbers, isLoading: false } : s));
+    }
 
-    setSets(updatedSets); // Update with final numbers and loading states
-    setHasGenerated(true); // Mark as generated
     setIsGenerating(false); // Overall generation finished
-    setShowGenerationAnimation(false); // Stop showing generation animation
   }, [userEntropy, t]);
 
   const handleStartGeneration = () => {
@@ -138,12 +205,13 @@ const App: React.FC = () => {
   const handleAction = async (action: 'download' | 'share') => {
     if (!printRef.current) return;
 
+    if (sets.length === 0 || isGenerating) {
+      alert(lang === 'ko' ? '번호 생성이 완료된 후 시도해주세요!' : 'Please wait until generation is complete!');
+      return;
+    }
+
     // 공유: 생성된 로또 번호와 URL 공유
     if (action === 'share') {
-      if (!hasGenerated) {
-        alert(lang === 'ko' ? '번호를 먼저 생성해주세요!' : 'Please generate numbers first!');
-        return;
-      }
 
       const generatedNumbersText = sets.map(set => {
         if (set.numbers && set.numbers.length > 0) {
@@ -252,27 +320,7 @@ const App: React.FC = () => {
         {/* Lotto Sets Display */}
         <div className="space-y-6">
           <AnimatePresence mode="wait">
-            {showGenerationAnimation ? (
-              // NEW: Generation Animation Component
-              <motion.div
-                key="generation-animation"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center p-12 border-2 border-dashed border-slate-800 rounded-3xl min-h-[300px] flex items-center justify-center"
-              >
-
-                <motion.p
-                  initial={{ scale: 0.9 }}
-                  animate={{ scale: 1 }}
-                  transition={{ repeat: Infinity, duration: 0.8, repeatType: "mirror" }}
-                  className="text-blue-400 italic text-xl flex items-center gap-3"
-                >
-                  <Zap className="animate-pulse" size={24} />
-                  {t.generating} {t.generatingNumbers}
-                </motion.p>
-              </motion.div>
-            ) : !hasGenerated ? (
+            {sets.length === 0 ? (
               <motion.div
                 key="empty-prompt"
                 initial={{ opacity: 0 }}
@@ -341,10 +389,9 @@ const App: React.FC = () => {
                         <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          className="flex items-center gap-2 text-blue-300 italic p-4 rounded-xl bg-slate-800"
+                          className="flex items-center gap-2 p-2 rounded-xl"
                         >
-                          <RefreshCw className="animate-spin" size={20} />
-                          <span>{t.generatingNumbers}</span>
+                          <CategoryAnimation id={set.id} t={t} />
                         </motion.div>
                       ) : (
                         set.numbers.map((num, nIdx) => {
