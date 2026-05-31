@@ -120,44 +120,155 @@ const WealthLuckIndicator = ({ luck, t }: { luck: number, t: any }) => {
   let message = '';
   let colorClass = '';
   let barColor = '';
+  let AnimationOverlay = null;
   
   if (luck >= 90) {
     message = t.wealthLuck.level4;
     colorClass = 'text-red-400';
-    barColor = 'bg-red-500';
+    barColor = 'bg-gradient-to-r from-red-600 via-orange-500 to-yellow-400';
+    AnimationOverlay = (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-full">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1.5 h-1.5 bg-yellow-300 rounded-full shadow-[0_0_5px_#fde047]"
+            initial={{ 
+              left: `${Math.random() * 100}%`, 
+              top: '120%', 
+              opacity: 0,
+              scale: 0.5 
+            }}
+            animate={{ 
+              top: '-20%', 
+              opacity: [0, 1, 0],
+              scale: [0.5, 1.2, 0.5],
+              x: [0, Math.random() * 20 - 10]
+            }}
+            transition={{ 
+              duration: Math.random() * 1 + 0.5, 
+              repeat: Infinity, 
+              delay: Math.random() * 2 
+            }}
+          />
+        ))}
+        <motion.div 
+          className="absolute inset-0 bg-white/20"
+          animate={{ opacity: [0, 0.4, 0] }}
+          transition={{ duration: 0.5, repeat: Infinity }}
+        />
+      </div>
+    );
   } else if (luck >= 70) {
     message = t.wealthLuck.level3;
     colorClass = 'text-yellow-400';
-    barColor = 'bg-yellow-500';
+    barColor = 'bg-gradient-to-r from-yellow-500 to-yellow-300';
+    AnimationOverlay = (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-full">
+        <motion.div 
+          className="absolute top-0 bottom-0 w-16 bg-gradient-to-r from-transparent via-white/50 to-transparent skew-x-[-20deg]"
+          animate={{ left: ['-30%', '130%'] }}
+          transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+        />
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute flex items-center justify-center"
+            initial={{ 
+              left: `${Math.random() * 100}%`, 
+              top: `${Math.random() * 100}%`,
+              scale: 0,
+              opacity: 0
+            }}
+            animate={{ 
+              scale: [0, 1.5, 0],
+              opacity: [0, 1, 0],
+              rotate: [0, 90, 180]
+            }}
+            transition={{ 
+              duration: 1.5, 
+              repeat: Infinity, 
+              delay: Math.random() * 2 
+            }}
+          >
+             <Sparkles size={12} className="text-yellow-100 opacity-80" />
+          </motion.div>
+        ))}
+      </div>
+    );
   } else if (luck >= 40) {
     message = t.wealthLuck.level2;
     colorClass = 'text-blue-400';
-    barColor = 'bg-blue-500';
+    barColor = 'bg-gradient-to-r from-blue-600 to-blue-400';
+    AnimationOverlay = (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-full flex items-center">
+        <motion.div 
+          className="w-full h-full bg-blue-300/20"
+          animate={{ opacity: [0.1, 0.4, 0.1] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </div>
+    );
   } else {
     message = t.wealthLuck.level1;
     colorClass = 'text-slate-400';
-    barColor = 'bg-slate-500';
+    barColor = 'bg-gradient-to-r from-slate-600 to-slate-500';
+    AnimationOverlay = (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-full flex items-center justify-center">
+        <motion.div 
+          className="w-full h-full bg-slate-900/20"
+          animate={{ opacity: [0.1, 0.3, 0.1] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+        />
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-[1.5px] h-3 bg-slate-300/40 rounded-full"
+            initial={{ 
+              left: `${Math.random() * 100}%`, 
+              top: '-10px'
+            }}
+            animate={{ 
+              top: '30px',
+              opacity: [0, 1, 0]
+            }}
+            transition={{ 
+              duration: Math.random() * 0.5 + 0.5, 
+              repeat: Infinity, 
+              delay: Math.random() * 2 
+            }}
+          />
+        ))}
+      </div>
+    );
   }
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="max-w-md mx-auto mb-10 p-6 bg-slate-900/60 border border-slate-800 rounded-3xl shadow-xl backdrop-blur-sm text-center"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="max-w-md mx-auto mb-10 p-6 bg-slate-900/60 border border-slate-800 rounded-3xl shadow-xl backdrop-blur-sm text-center relative overflow-hidden"
     >
-      <h3 className="text-lg font-bold text-slate-300 mb-4">{t.wealthLuck.title}</h3>
+      {/* Background ambient glow based on luck */}
+      {luck >= 90 && <div className="absolute inset-0 bg-red-500/10 blur-xl pointer-events-none animate-pulse"></div>}
+      {luck >= 70 && luck < 90 && <div className="absolute inset-0 bg-yellow-500/10 blur-xl pointer-events-none"></div>}
+      
+      <h3 className="text-lg font-bold text-slate-300 mb-4 relative z-10">{t.wealthLuck.title}</h3>
       <div className="relative h-6 bg-slate-800 rounded-full overflow-hidden mb-4 shadow-inner">
         <motion.div 
           initial={{ width: 0 }}
           animate={{ width: `${luck}%` }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
-          className={`absolute top-0 left-0 h-full ${barColor} shadow-[0_0_15px_rgba(0,0,0,0.5)]`}
-        />
-        <div className="absolute inset-0 flex items-center justify-center font-black text-xs text-white drop-shadow-md z-10">
+          transition={{ duration: 1.5, ease: "easeOut", type: "spring", bounce: 0.2 }}
+          className={`absolute top-0 left-0 h-full ${barColor} shadow-[0_0_15px_rgba(0,0,0,0.3)]`}
+        >
+           {AnimationOverlay}
+        </motion.div>
+        <div className="absolute inset-0 flex items-center justify-center font-black text-xs text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] z-10 mix-blend-normal">
           {luck}%
         </div>
       </div>
-      <p className={`font-medium ${colorClass} break-keep`}>{message}</p>
+      <p className={`font-medium ${colorClass} break-keep relative z-10`}>
+        {message}
+      </p>
     </motion.div>
   );
 };
