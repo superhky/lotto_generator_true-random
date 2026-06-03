@@ -195,7 +195,7 @@ const WealthLuckIndicator = ({ luck, t }: { luck: number, t: any }) => {
         ))}
       </div>
     );
-  } else if (luck >= 40) {
+  } else if (luck >= 30) {
     message = t.wealthLuck.level2;
     colorClass = 'text-blue-400';
     barColor = 'bg-gradient-to-r from-blue-600 to-blue-400';
@@ -244,16 +244,30 @@ const WealthLuckIndicator = ({ luck, t }: { luck: number, t: any }) => {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="max-w-md mx-auto mb-10 p-6 bg-slate-900/60 border border-slate-800 rounded-3xl shadow-xl backdrop-blur-sm text-center relative overflow-hidden"
+      initial={{ opacity: 0, scale: 0.8, y: -20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.8, type: "spring", bounce: 0.4 }}
+      className={`max-w-lg mx-auto mb-14 p-8 bg-slate-900/80 rounded-3xl shadow-2xl backdrop-blur-xl text-center relative overflow-hidden border-2 ${
+        luck >= 90 ? 'border-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.3)]' :
+        luck >= 70 ? 'border-yellow-500/50 shadow-[0_0_30px_rgba(234,179,8,0.2)]' :
+        luck >= 30 ? 'border-blue-500/40 shadow-[0_0_20px_rgba(59,130,246,0.15)]' :
+        'border-slate-700/50 shadow-lg'
+      }`}
     >
       {/* Background ambient glow based on luck */}
-      {luck >= 90 && <div className="absolute inset-0 bg-red-500/10 blur-xl pointer-events-none animate-pulse"></div>}
-      {luck >= 70 && luck < 90 && <div className="absolute inset-0 bg-yellow-500/10 blur-xl pointer-events-none"></div>}
+      {luck >= 90 && <div className="absolute inset-0 bg-red-500/20 blur-2xl pointer-events-none animate-pulse"></div>}
+      {luck >= 70 && luck < 90 && <div className="absolute inset-0 bg-yellow-500/15 blur-2xl pointer-events-none animate-[pulse_3s_ease-in-out_infinite]"></div>}
+      {luck >= 30 && luck < 70 && <div className="absolute inset-0 bg-blue-500/10 blur-2xl pointer-events-none"></div>}
       
-      <h3 className="text-lg font-bold text-slate-300 mb-4 relative z-10">{t.wealthLuck.title}</h3>
-      <div className="relative h-6 bg-slate-800 rounded-full overflow-hidden mb-4 shadow-inner">
+      <motion.div 
+        animate={{ scale: [1, 1.05, 1] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        className="inline-block mb-2"
+      >
+        <span className="text-2xl">✨</span>
+      </motion.div>
+      <h3 className="text-xl font-black text-white mb-6 relative z-10 drop-shadow-md">{t.wealthLuck.title}</h3>
+      <div className="relative h-8 bg-slate-800 rounded-full overflow-hidden mb-5 shadow-inner border border-slate-700/50">
         <motion.div 
           initial={{ width: 0 }}
           animate={{ width: `${luck}%` }}
@@ -262,11 +276,11 @@ const WealthLuckIndicator = ({ luck, t }: { luck: number, t: any }) => {
         >
            {AnimationOverlay}
         </motion.div>
-        <div className="absolute inset-0 flex items-center justify-center font-black text-xs text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] z-10 mix-blend-normal">
+        <div className="absolute inset-0 flex items-center justify-center font-black text-sm text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] z-10 mix-blend-normal">
           {luck}%
         </div>
       </div>
-      <p className={`font-medium ${colorClass} break-keep relative z-10`}>
+      <p className={`text-lg font-bold ${colorClass} break-keep relative z-10 drop-shadow-md`}>
         {message}
       </p>
     </motion.div>
@@ -429,7 +443,22 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-500/30 overflow-x-hidden">
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-500/30 overflow-x-hidden relative">
+      {/* Dynamic Full Screen Ambient Glow based on Wealth Luck */}
+      <AnimatePresence>
+        {wealthLuck !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 pointer-events-none z-0"
+          >
+            {wealthLuck >= 90 && <div className="absolute inset-0 bg-red-500/10 blur-[100px] animate-pulse"></div>}
+            {wealthLuck >= 70 && wealthLuck < 90 && <div className="absolute inset-0 bg-yellow-500/10 blur-[100px] animate-[pulse_4s_ease-in-out_infinite]"></div>}
+            {wealthLuck >= 30 && wealthLuck < 70 && <div className="absolute inset-0 bg-blue-500/5 blur-[100px]"></div>}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Desktop Side Ad (Visible on 1024px+ screens) */}
       <div className="hidden lg:block fixed left-2 xl:left-6 top-24 z-10">
         <KakaoAdVertical />
@@ -460,7 +489,7 @@ const App: React.FC = () => {
           <h1 className="text-4xl md:text-5xl font-black tracking-tight bg-gradient-to-b from-white to-slate-400 bg-clip-text text-transparent">
             {t.heroTitle}
           </h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto whitespace-pre-line">
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto whitespace-pre-line relative z-10">
             {t.heroSubtitle1}<br className="hidden md:block" />
             {t.heroSubtitle2}
           </p>
