@@ -299,13 +299,44 @@ const WealthLuckIndicator = ({ luck, t }: { luck: number, t: any }) => {
       )}
       {luck >= 30 && luck < 70 && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute inset-0 bg-blue-500/10 blur-2xl"></div>
-          {/* Subtle Shimmer */}
+          <div className="absolute inset-0 bg-blue-500/10 blur-2xl animate-[pulse_4s_ease-in-out_infinite]"></div>
+          {/* Water Shimmer / Ripple */}
           <motion.div 
-            className="absolute top-0 bottom-0 w-20 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-[-20deg]"
+            className="absolute top-0 bottom-0 w-32 bg-gradient-to-r from-transparent via-blue-300/10 to-transparent skew-x-[-30deg]"
             animate={{ left: ['-50%', '150%'] }}
-            transition={{ duration: 4, repeat: Infinity, repeatDelay: 2, ease: "easeInOut" }}
+            transition={{ duration: 4, repeat: Infinity, repeatDelay: 1, ease: "easeInOut" }}
           />
+          {/* Bubbles */}
+          {[...Array(8)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 border border-blue-300/50 rounded-full"
+              initial={{ left: `${Math.random() * 100}%`, top: '100%', opacity: 0 }}
+              animate={{ top: '-10%', opacity: [0, 0.6, 0], scale: [0.5, 1.5, 0.8] }}
+              transition={{ duration: Math.random() * 3 + 3, repeat: Infinity, delay: Math.random() * 2 }}
+            />
+          ))}
+        </div>
+      )}
+      {luck < 30 && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute inset-0 bg-slate-900/30 blur-2xl"></div>
+          {/* Heavy Shadow Shimmer */}
+          <motion.div 
+            className="absolute top-0 bottom-0 w-full bg-gradient-to-b from-transparent via-slate-800/40 to-transparent"
+            animate={{ top: ['-100%', '200%'] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+          />
+          {/* Dust / Rain */}
+          {[...Array(15)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-[1px] h-3 bg-slate-400/30 rounded-full"
+              initial={{ left: `${Math.random() * 100}%`, top: '-10%', opacity: 0 }}
+              animate={{ top: '110%', opacity: [0, 1, 0] }}
+              transition={{ duration: Math.random() * 1 + 1, repeat: Infinity, delay: Math.random() * 2 }}
+            />
+          ))}
         </div>
       )}
       
