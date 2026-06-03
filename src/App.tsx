@@ -254,10 +254,60 @@ const WealthLuckIndicator = ({ luck, t }: { luck: number, t: any }) => {
         'border-slate-700/50 shadow-lg'
       }`}
     >
-      {/* Background ambient glow based on luck */}
-      {luck >= 90 && <div className="absolute inset-0 bg-red-500/20 blur-2xl pointer-events-none animate-pulse"></div>}
-      {luck >= 70 && luck < 90 && <div className="absolute inset-0 bg-yellow-500/15 blur-2xl pointer-events-none animate-[pulse_3s_ease-in-out_infinite]"></div>}
-      {luck >= 30 && luck < 70 && <div className="absolute inset-0 bg-blue-500/10 blur-2xl pointer-events-none"></div>}
+      {/* Background ambient glow & internal animations based on luck */}
+      {luck >= 90 && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute inset-0 bg-red-500/20 blur-2xl animate-pulse"></div>
+          {/* Shimmer */}
+          <motion.div 
+            className="absolute top-0 bottom-0 w-32 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-20deg]"
+            animate={{ left: ['-50%', '150%'] }}
+            transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 0.5, ease: "easeInOut" }}
+          />
+          {/* Particles */}
+          {[...Array(12)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1.5 h-1.5 bg-yellow-300 rounded-full shadow-[0_0_10px_#fef08a]"
+              initial={{ left: `${Math.random() * 100}%`, top: '100%', opacity: 0 }}
+              animate={{ top: '-10%', opacity: [0, 1, 0], scale: [0.5, 1.5, 0.5], x: [0, Math.random() * 40 - 20] }}
+              transition={{ duration: Math.random() * 2 + 1.5, repeat: Infinity, delay: Math.random() * 2 }}
+            />
+          ))}
+        </div>
+      )}
+      {luck >= 70 && luck < 90 && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute inset-0 bg-yellow-500/15 blur-2xl animate-[pulse_3s_ease-in-out_infinite]"></div>
+          {/* Shimmer */}
+          <motion.div 
+            className="absolute top-0 bottom-0 w-24 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[-20deg]"
+            animate={{ left: ['-50%', '150%'] }}
+            transition={{ duration: 3, repeat: Infinity, repeatDelay: 1, ease: "easeInOut" }}
+          />
+          {/* Particles */}
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1.5 h-1.5 bg-yellow-100 rounded-full shadow-[0_0_8px_#fef08a]"
+              initial={{ left: `${Math.random() * 100}%`, top: '100%', opacity: 0 }}
+              animate={{ top: '-10%', opacity: [0, 0.8, 0] }}
+              transition={{ duration: Math.random() * 2 + 2, repeat: Infinity, delay: Math.random() * 2 }}
+            />
+          ))}
+        </div>
+      )}
+      {luck >= 30 && luck < 70 && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute inset-0 bg-blue-500/10 blur-2xl"></div>
+          {/* Subtle Shimmer */}
+          <motion.div 
+            className="absolute top-0 bottom-0 w-20 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-[-20deg]"
+            animate={{ left: ['-50%', '150%'] }}
+            transition={{ duration: 4, repeat: Infinity, repeatDelay: 2, ease: "easeInOut" }}
+          />
+        </div>
+      )}
       
       <motion.div 
         animate={{ scale: [1, 1.05, 1] }}
