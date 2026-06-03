@@ -264,16 +264,34 @@ const WealthLuckIndicator = ({ luck, t }: { luck: number, t: any }) => {
             animate={{ left: ['-50%', '150%'] }}
             transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 0.5, ease: "easeInOut" }}
           />
-          {/* Particles */}
-          {[...Array(12)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1.5 h-1.5 bg-yellow-300 rounded-full shadow-[0_0_10px_#fef08a]"
-              initial={{ left: `${Math.random() * 100}%`, top: '100%', opacity: 0 }}
-              animate={{ top: '-10%', opacity: [0, 1, 0], scale: [0.5, 1.5, 0.5], x: [0, Math.random() * 40 - 20] }}
-              transition={{ duration: Math.random() * 2 + 1.5, repeat: Infinity, delay: Math.random() * 2 }}
-            />
-          ))}
+          {/* Fireworks */}
+          {[...Array(6)].map((_, i) => {
+            const delay = Math.random() * 2;
+            const leftPos = 20 + Math.random() * 60;
+            const topPos = 20 + Math.random() * 40;
+            return (
+              <div key={i} className="absolute" style={{ left: `${leftPos}%`, top: `${topPos}%` }}>
+                {[...Array(8)].map((_, j) => {
+                  const angle = (j / 8) * Math.PI * 2;
+                  const distance = 40 + Math.random() * 30;
+                  return (
+                    <motion.div
+                      key={j}
+                      className={`absolute w-1.5 h-1.5 rounded-full ${['bg-yellow-300', 'bg-red-400', 'bg-white', 'bg-orange-300'][Math.floor(Math.random()*4)]} shadow-[0_0_10px_currentColor]`}
+                      initial={{ x: 0, y: 0, opacity: 0, scale: 0 }}
+                      animate={{ 
+                        x: Math.cos(angle) * distance, 
+                        y: Math.sin(angle) * distance, 
+                        opacity: [0, 1, 0], 
+                        scale: [0, 1.5, 0] 
+                      }}
+                      transition={{ duration: 1.5, repeat: Infinity, delay: delay, ease: "easeOut" }}
+                    />
+                  );
+                })}
+              </div>
+            );
+          })}
         </div>
       )}
       {luck >= 70 && luck < 90 && (
@@ -285,15 +303,17 @@ const WealthLuckIndicator = ({ luck, t }: { luck: number, t: any }) => {
             animate={{ left: ['-50%', '150%'] }}
             transition={{ duration: 3, repeat: Infinity, repeatDelay: 1, ease: "easeInOut" }}
           />
-          {/* Particles */}
-          {[...Array(6)].map((_, i) => (
+          {/* Sparkle Stars */}
+          {[...Array(8)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-1.5 h-1.5 bg-yellow-100 rounded-full shadow-[0_0_8px_#fef08a]"
+              className="absolute text-yellow-300 drop-shadow-[0_0_8px_rgba(253,224,71,0.8)]"
               initial={{ left: `${Math.random() * 100}%`, top: '100%', opacity: 0 }}
-              animate={{ top: '-10%', opacity: [0, 0.8, 0] }}
-              transition={{ duration: Math.random() * 2 + 2, repeat: Infinity, delay: Math.random() * 2 }}
-            />
+              animate={{ top: '-10%', opacity: [0, 1, 0], rotate: [0, 180, 360] }}
+              transition={{ duration: Math.random() * 2 + 4, repeat: Infinity, delay: Math.random() * 2, ease: "linear" }}
+            >
+              <Sparkles size={14 + Math.random() * 10} />
+            </motion.div>
           ))}
         </div>
       )}
@@ -307,13 +327,14 @@ const WealthLuckIndicator = ({ luck, t }: { luck: number, t: any }) => {
             transition={{ duration: 4, repeat: Infinity, repeatDelay: 1, ease: "easeInOut" }}
           />
           {/* Bubbles */}
-          {[...Array(8)].map((_, i) => (
+          {[...Array(12)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-2 h-2 border border-blue-300/50 rounded-full"
+              className="absolute bg-blue-400/20 border-2 border-blue-300/70 rounded-full"
+              style={{ width: `${8 + Math.random() * 12}px`, height: `${8 + Math.random() * 12}px` }}
               initial={{ left: `${Math.random() * 100}%`, top: '100%', opacity: 0 }}
-              animate={{ top: '-10%', opacity: [0, 0.6, 0], scale: [0.5, 1.5, 0.8] }}
-              transition={{ duration: Math.random() * 3 + 3, repeat: Infinity, delay: Math.random() * 2 }}
+              animate={{ top: '-10%', opacity: [0, 0.9, 0], x: [0, Math.random() * 30 - 15, 0] }}
+              transition={{ duration: Math.random() * 3 + 3, repeat: Infinity, delay: Math.random() * 2, ease: "easeInOut" }}
             />
           ))}
         </div>
@@ -327,14 +348,14 @@ const WealthLuckIndicator = ({ luck, t }: { luck: number, t: any }) => {
             animate={{ top: ['-100%', '200%'] }}
             transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
           />
-          {/* Dust / Rain */}
-          {[...Array(15)].map((_, i) => (
+          {/* Rain / Static */}
+          {[...Array(25)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-[1px] h-3 bg-slate-400/30 rounded-full"
-              initial={{ left: `${Math.random() * 100}%`, top: '-10%', opacity: 0 }}
-              animate={{ top: '110%', opacity: [0, 1, 0] }}
-              transition={{ duration: Math.random() * 1 + 1, repeat: Infinity, delay: Math.random() * 2 }}
+              className="absolute w-[2px] h-8 bg-slate-300/70 rounded-full shadow-[0_0_5px_rgba(203,213,225,0.5)]"
+              initial={{ left: `${Math.random() * 100}%`, top: '-20%', opacity: 0 }}
+              animate={{ top: '120%', opacity: [0, 1, 0.5] }}
+              transition={{ duration: Math.random() * 0.8 + 0.5, repeat: Infinity, delay: Math.random() * 2, ease: "linear" }}
             />
           ))}
         </div>
