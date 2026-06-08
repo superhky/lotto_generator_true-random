@@ -7,8 +7,7 @@ const KakaoAd320x480: React.FC = () => {
     if (typeof window === 'undefined') return;
 
     const adContainer = adRef.current;
-    if (adContainer) {
-      adContainer.innerHTML = '';
+    if (adContainer && adContainer.children.length === 0) {
       
       const ins = document.createElement('ins');
       ins.className = 'kakao_ad_area';
@@ -25,12 +24,6 @@ const KakaoAd320x480: React.FC = () => {
       adContainer.appendChild(ins);
       adContainer.appendChild(script);
     }
-
-    return () => {
-      if (adContainer) {
-        adContainer.innerHTML = '';
-      }
-    };
   }, []);
 
   return (

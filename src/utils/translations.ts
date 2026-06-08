@@ -22,6 +22,7 @@ export const translations = {
       level3: "✨ 흐름이 아주 좋습니다! 행운이 따를지도 모릅니다.",
       level2: "👍 평온한 상태입니다. 직감에 맡겨보세요.",
       level1: "😅 잠시 기운을 모으고 다시 시도해보는 건 어떨까요?",
+      refreshBtn: "다시 시도하기",
     },
     sourceLabels: {
       atmospheric: "대기 잡음",
@@ -88,6 +89,7 @@ export const translations = {
       level3: "✨ Great flow! Luck might be on your side.",
       level2: "👍 Peaceful state. Trust your intuition.",
       level1: "😅 How about gathering energy and trying again in a bit?",
+      refreshBtn: "Try Again",
     },
     sourceLabels: {
       atmospheric: "Atmospheric Noise",

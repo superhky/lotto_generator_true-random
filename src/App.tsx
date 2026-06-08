@@ -117,7 +117,7 @@ const CategoryAnimation = ({ id, t }: { id: string, t: any }) => {
   }
 };
 
-const WealthLuckIndicator = ({ luck, t }: { luck: number, t: any }) => {
+const WealthLuckIndicator = ({ luck, t, onRefresh }: { luck: number, t: any, onRefresh: () => void }) => {
   let message = '';
   let colorClass = '';
   let barColor = '';
@@ -386,6 +386,16 @@ const WealthLuckIndicator = ({ luck, t }: { luck: number, t: any }) => {
       <p className={`text-lg font-bold ${colorClass} break-keep relative z-10 drop-shadow-md`}>
         {message}
       </p>
+      
+      <div className="mt-8 relative z-10">
+        <button 
+          onClick={onRefresh}
+          className="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 border border-emerald-500/50 rounded-full text-sm font-bold text-white transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] active:scale-95 group"
+        >
+          <RefreshCw size={16} className="transition-transform duration-500 group-hover:rotate-180" />
+          {t.wealthLuck.refreshBtn || "다시 시도하기"}
+        </button>
+      </div>
     </motion.div>
   );
 };
@@ -599,7 +609,7 @@ const App: React.FC = () => {
         </header>
 
         {/* Wealth Luck Indicator */}
-        {wealthLuck !== null && <WealthLuckIndicator luck={wealthLuck} t={t} />}
+        {wealthLuck !== null && <WealthLuckIndicator luck={wealthLuck} t={t} onRefresh={() => setWealthLuck(Math.floor(Math.random() * 100) + 1)} />}
 
         {/* Generation Trigger */}
         <div className="flex justify-center my-12">
