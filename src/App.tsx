@@ -11,6 +11,7 @@ import {
   getUserEntropyRandom
 } from './utils/TRNGService';
 import KakaoAdTop from './components/KakaoAdTop';
+import KakaoAdVertical from './components/KakaoAdVertical';
 import InfoSection from './components/InfoSection';
 import { translations, type Language } from './utils/translations';
 
