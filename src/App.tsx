@@ -14,6 +14,7 @@ import KakaoAd from './components/KakaoAd';
 import KakaoAdVertical from './components/KakaoAdVertical';
 import KakaoAdRectangle from './components/KakaoAdRectangle';
 import KakaoAd320x480 from './components/KakaoAd320x480';
+import KakaoAdTop from './components/KakaoAdTop';
 import InfoSection from './components/InfoSection';
 import { translations, type Language } from './utils/translations';
 
@@ -589,6 +590,9 @@ const App: React.FC = () => {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-12">
+        {/* Top Ad */}
+        <KakaoAdTop />
+
         {/* Header */}
         <header className="text-center space-y-4 mb-12">
           <motion.div
