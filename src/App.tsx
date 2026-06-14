@@ -10,10 +10,6 @@ import {
   getJitterRandom,
   getUserEntropyRandom
 } from './utils/TRNGService';
-import KakaoAd from './components/KakaoAd';
-import KakaoAdVertical from './components/KakaoAdVertical';
-import KakaoAdRectangle from './components/KakaoAdRectangle';
-import KakaoAd320x480 from './components/KakaoAd320x480';
 import KakaoAdTop from './components/KakaoAdTop';
 import InfoSection from './components/InfoSection';
 import { translations, type Language } from './utils/translations';
@@ -839,10 +835,6 @@ const App: React.FC = () => {
           </AnimatePresence>
         </div>
 
-        {/* Ads Section (Avoid duplicate IDs for stability) */}
-        <KakaoAdRectangle />
-        <KakaoAd />
-        <KakaoAd320x480 />
 
         {/* Educational Info Section */}
         <InfoSection lang={lang} />
