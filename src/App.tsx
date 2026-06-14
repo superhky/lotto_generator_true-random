@@ -12,6 +12,8 @@ import {
 } from './utils/TRNGService';
 import KakaoAdTop from './components/KakaoAdTop';
 import KakaoAdVertical from './components/KakaoAdVertical';
+import KakaoAdRectangle from './components/KakaoAdRectangle';
+import KakaoAd from './components/KakaoAd';
 import InfoSection from './components/InfoSection';
 import { translations, type Language } from './utils/translations';
 
@@ -836,6 +838,9 @@ const App: React.FC = () => {
           </AnimatePresence>
         </div>
 
+        {/* Ads Section */}
+        <KakaoAdRectangle />
+        <KakaoAd />
 
         {/* Educational Info Section */}
         <InfoSection lang={lang} />
