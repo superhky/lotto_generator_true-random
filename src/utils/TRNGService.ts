@@ -117,3 +117,118 @@ export const getUserEntropyRandom = (seedData: number[]): number[] => {
   
   return Array.from(nums).sort((a, b) => a - b);
 };
+
+// --- PENSION LOTTERY SOURCES ---
+
+const FALLBACK_PENSION = (): { group: number, numbers: number[] } => {
+  const array = new Uint32Array(7);
+  window.crypto.getRandomValues(array);
+  const group = (array[0] % 5) + 1; // 1 to 5
+  const numbers = [];
+  for (let i = 1; i <= 6; i++) {
+    numbers.push(array[i] % 10); // 0 to 9
+  }
+  return { group, numbers };
+};
+
+// Set 1 (Pension): Space Weather (Cosmic Ray Simulation)
+export const getSpaceWeatherPension = async (): Promise<{ group: number, numbers: number[] }> => {
+  await new Promise(resolve => setTimeout(resolve, 800)); // Simulate API delay
+  try {
+    const array = new Uint32Array(10);
+    window.crypto.getRandomValues(array);
+    let cosmicSeed = array.reduce((acc, val) => acc + val, 0);
+    const group = (Math.abs(cosmicSeed) % 5) + 1;
+    const numbers = [];
+    for (let i = 0; i < 6; i++) {
+      cosmicSeed = (cosmicSeed * 1103515245 + 12345) % 2147483648;
+      numbers.push(Math.abs(cosmicSeed) % 10);
+    }
+    return { group, numbers };
+  } catch (error) {
+    return FALLBACK_PENSION();
+  }
+};
+
+// Set 2 (Pension): Financial Entropy (Market Volatility Jitter)
+export const getFinancialEntropyPension = async (): Promise<{ group: number, numbers: number[] }> => {
+  await new Promise(resolve => setTimeout(resolve, 1200)); 
+  try {
+    const timeNow = Date.now();
+    let financialSeed = timeNow ^ (Math.random() * 0xFFFFFFFF);
+    const group = (Math.abs(financialSeed) % 5) + 1;
+    const numbers = [];
+    for (let i = 0; i < 6; i++) {
+      financialSeed = (financialSeed * 1664525 + 1013904223) % 4294967296;
+      numbers.push(Math.abs(financialSeed) % 10);
+    }
+    return { group, numbers };
+  } catch (error) {
+    return FALLBACK_PENSION();
+  }
+};
+
+// Set 3 (Pension): Network Latency Jitter
+export const getNetworkLatencyPension = async (): Promise<{ group: number, numbers: number[] }> => {
+  try {
+    const latencies: number[] = [];
+    for (let i = 0; i < 3; i++) {
+      const start = performance.now();
+      await fetch('https://1.1.1.1', { mode: 'no-cors', cache: 'no-cache' }).catch(() => {});
+      latencies.push(performance.now() - start);
+    }
+    const totalLatency = latencies.reduce((a, b) => a + b, 0);
+    let latencySeed = Math.floor(totalLatency * 1000);
+    const group = (Math.abs(latencySeed) % 5) + 1;
+    const numbers = [];
+    for (let i = 0; i < 6; i++) {
+      latencySeed = (latencySeed * 214013 + 2531011) % 4294967296;
+      numbers.push(Math.abs(latencySeed) % 10);
+    }
+    return { group, numbers };
+  } catch (error) {
+    return FALLBACK_PENSION();
+  }
+};
+
+// Set 4 (Pension): Kinetic Entropy (Mouse/Touch Acceleration)
+export const getKineticEntropyPension = (seedData: number[]): { group: number, numbers: number[] } => {
+  if (seedData.length < 2) return FALLBACK_PENSION();
+  
+  // Calculate differences (velocity)
+  let kineticEnergy = 0;
+  for (let i = 1; i < seedData.length; i++) {
+    kineticEnergy += Math.abs(seedData[i] - seedData[i-1]);
+  }
+  
+  let kineticSeed = Math.floor(kineticEnergy * 100) ^ Date.now();
+  const group = (Math.abs(kineticSeed) % 5) + 1;
+  const numbers = [];
+  for (let i = 0; i < 6; i++) {
+    kineticSeed = (kineticSeed * 1664525 + 1013904223) % 4294967296;
+    numbers.push(Math.abs(kineticSeed) % 10);
+  }
+  return { group, numbers };
+};
+
+// Set 5 (Pension): Ambient Acoustic Noise (Microphone simulation)
+export const getAmbientNoisePension = async (): Promise<{ group: number, numbers: number[] }> => {
+  await new Promise(resolve => setTimeout(resolve, 900));
+  try {
+    // Simulating ambient noise capturing via WebCrypto
+    const noiseArray = new Uint8Array(256);
+    window.crypto.getRandomValues(noiseArray);
+    let noiseSeed = noiseArray.reduce((acc, val) => acc ^ val, 0);
+    noiseSeed += performance.now();
+    
+    const group = (Math.floor(Math.abs(noiseSeed)) % 5) + 1;
+    const numbers = [];
+    for (let i = 0; i < 6; i++) {
+      noiseSeed = (noiseSeed * 1103515245 + 12345) % 2147483648;
+      numbers.push(Math.floor(Math.abs(noiseSeed)) % 10);
+    }
+    return { group, numbers };
+  } catch (error) {
+    return FALLBACK_PENSION();
+  }
+};

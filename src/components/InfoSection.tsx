@@ -5,10 +5,11 @@ import { translations, type Language } from '../utils/translations';
 
 interface InfoSectionProps {
   lang: Language;
+  lotteryType: 'lotto' | 'pension';
 }
 
-const InfoSection: React.FC<InfoSectionProps> = ({ lang }) => {
-  const t = translations[lang].infoSection;
+const InfoSection: React.FC<InfoSectionProps> = ({ lang, lotteryType }) => {
+  const t = lotteryType === 'pension' ? translations[lang].pensionInfoSection : translations[lang].lottoInfoSection;
 
   return (
     <div className="mt-16 space-y-12 text-slate-300 max-w-4xl mx-auto px-4 pb-20">

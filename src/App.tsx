@@ -1,14 +1,19 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Zap, Radio, Thermometer, User, RefreshCw, Languages, Shield, Info, Mail, X, Download, Share2 } from 'lucide-react';
+import { Sparkles, Zap, Radio, Thermometer, User, RefreshCw, Languages, Shield, Info, Mail, X, Download, Share2, Globe, TrendingUp, Activity, Move, Waves } from 'lucide-react';
 import { toBlob } from 'html-to-image';
 import {
   getAtmosphericRandom,
   getQuantumRandom,
   getOpticalThermalRandom,
   getJitterRandom,
-  getUserEntropyRandom
+  getUserEntropyRandom,
+  getSpaceWeatherPension,
+  getFinancialEntropyPension,
+  getNetworkLatencyPension,
+  getKineticEntropyPension,
+  getAmbientNoisePension
 } from './utils/TRNGService';
 import KakaoAdTop from './components/KakaoAdTop';
 import KakaoAdVertical from './components/KakaoAdVertical';
@@ -21,6 +26,7 @@ interface LottoSet {
   id: string;
   source: string;
   numbers: number[];
+  group?: number;
   icon: React.ReactNode;
   description: string;
   isLoading: boolean;
@@ -112,8 +118,95 @@ const CategoryAnimation = ({ id, t }: { id: string, t: any }) => {
           <span className="z-10 text-orange-300 font-bold italic ml-6">{t.generatingNumbers || '생성 중...'}</span>
         </div>
       );
+    case 'space':
+      return (
+        <div className="relative w-48 h-12 flex justify-center items-center overflow-hidden">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-white rounded-full shadow-[0_0_5px_#fff]"
+              initial={{ x: 0, y: 0, scale: 0 }}
+              animate={{
+                x: (Math.random() - 0.5) * 200,
+                y: (Math.random() - 0.5) * 80,
+                scale: [0, Math.random() * 2 + 1, 0]
+              }}
+              transition={{ duration: Math.random() * 1 + 0.5, repeat: Infinity, ease: "linear" }}
+            />
+          ))}
+          <span className="z-10 text-purple-200 font-bold italic drop-shadow-md">{t.generatingNumbers || '생성 중...'}</span>
+        </div>
+      );
+    case 'financial':
+      return (
+        <div className="flex justify-center items-end h-12 gap-1.5 p-2 w-48">
+          {[...Array(12)].map((_, i) => (
+            <motion.div
+              key={i}
+              className={`w-2 rounded-t-sm ${i % 2 === 0 ? 'bg-red-400' : 'bg-green-400'}`}
+              animate={{ height: ['20%', `${Math.random() * 80 + 20}%`, '20%'] }}
+              transition={{ duration: 0.4 + Math.random() * 0.4, repeat: Infinity, repeatType: 'mirror' }}
+            />
+          ))}
+          <span className="ml-2 text-green-300 font-bold italic self-center">{t.generatingNumbers || '생성 중...'}</span>
+        </div>
+      );
+    case 'network':
+      return (
+        <div className="relative w-48 h-12 flex justify-center items-center overflow-hidden">
+          {[...Array(3)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-4 h-4 rounded-full border-2 border-red-500"
+              initial={{ scale: 0, opacity: 1 }}
+              animate={{ scale: 6, opacity: 0 }}
+              transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.5 }}
+            />
+          ))}
+          <span className="z-10 text-red-300 font-bold italic">{t.generatingNumbers || '생성 중...'}</span>
+        </div>
+      );
+    case 'kinetic':
+      return (
+        <div className="relative w-48 h-12 flex justify-center items-center overflow-hidden">
+          <motion.div
+            className="w-8 h-2 bg-orange-400 rounded-full shadow-[0_0_10px_#f97316]"
+            animate={{ x: [-60, 60] }}
+            transition={{ duration: 0.5, repeat: Infinity, repeatType: 'reverse', ease: "easeInOut" }}
+          />
+          <motion.div
+            className="w-6 h-1 bg-yellow-400 rounded-full shadow-[0_0_10px_#facc15] absolute"
+            animate={{ x: [60, -60] }}
+            transition={{ duration: 0.35, repeat: Infinity, repeatType: 'reverse', ease: "easeInOut" }}
+          />
+          <span className="z-10 text-orange-200 font-bold italic ml-3">{t.generatingNumbers || '생성 중...'}</span>
+        </div>
+      );
+    case 'ambient':
+      return (
+        <div className="flex justify-center items-center h-12 gap-1 p-2 w-48">
+          {[...Array(15)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="w-1.5 bg-blue-400 rounded-full"
+              animate={{ height: ['20%', `${Math.random() * 80 + 20}%`, '20%'] }}
+              transition={{ duration: 0.2 + Math.random() * 0.2, repeat: Infinity, repeatType: 'mirror' }}
+            />
+          ))}
+          <span className="ml-3 text-blue-300 font-bold italic">{t.generatingNumbers || '생성 중...'}</span>
+        </div>
+      );
     default:
-      return null;
+      return (
+        <div className="flex gap-2 h-10 items-center justify-center p-4">
+          <motion.div
+            className="w-3 h-3 bg-purple-400 rounded-full"
+            animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 0.8, repeat: Infinity }}
+          />
+          <span className="ml-3 text-purple-400 font-bold italic">{t.generatingNumbers || '생성 중...'}</span>
+        </div>
+      );
   }
 };
 
@@ -402,6 +495,7 @@ const WealthLuckIndicator = ({ luck, t, onRefresh }: { luck: number, t: any, onR
 
 const App: React.FC = () => {
   const [lang, setLang] = useState<Language>('ko');
+  const [lotteryType, setLotteryType] = useState<'lotto' | 'pension'>('lotto');
   const [sets, setSets] = useState<LottoSet[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   // const [isAdOpen, setIsAdOpen] = useState(false); // 심사 중 미사용
@@ -432,43 +526,62 @@ const App: React.FC = () => {
   const generateAllNumbers = useCallback(async () => {
     setIsGenerating(true); // Indicate overall generation started
 
-    const initialSets: LottoSet[] = [
-      { id: 'atmospheric', source: '[Atmospheric Source]', numbers: [], icon: <Radio className="text-blue-400" size={18} />, description: t.sourceLabels.atmospheric, isLoading: true },
-      { id: 'quantum', source: '[Quantum Source]', numbers: [], icon: <Zap className="text-purple-400" size={18} />, description: t.sourceLabels.quantum, isLoading: true },
-      { id: 'thermal', source: '[Optical/Thermal Source]', numbers: [], icon: <Thermometer className="text-red-400" size={18} />, description: t.sourceLabels.thermal, isLoading: true },
-      { id: 'jitter', source: '[Hardware Jitter Source]', numbers: [], icon: <RefreshCw className="text-green-400" size={14} />, description: t.sourceLabels.jitter, isLoading: true },
-      { id: 'user', source: '[User Entropy Source]', numbers: [], icon: <User className="text-orange-400" size={18} />, description: t.sourceLabels.user, isLoading: true },
-    ];
+    let initialSets: LottoSet[] = [];
+    if (lotteryType === 'lotto') {
+      initialSets = [
+        { id: 'atmospheric', source: '[Atmospheric Source]', numbers: [], icon: <Radio className="text-blue-400" size={18} />, description: t.sourceLabels.atmospheric, isLoading: true },
+        { id: 'quantum', source: '[Quantum Source]', numbers: [], icon: <Zap className="text-purple-400" size={18} />, description: t.sourceLabels.quantum, isLoading: true },
+        { id: 'thermal', source: '[Optical/Thermal Source]', numbers: [], icon: <Thermometer className="text-red-400" size={18} />, description: t.sourceLabels.thermal, isLoading: true },
+        { id: 'jitter', source: '[Hardware Jitter Source]', numbers: [], icon: <RefreshCw className="text-green-400" size={14} />, description: t.sourceLabels.jitter, isLoading: true },
+        { id: 'user', source: '[User Entropy Source]', numbers: [], icon: <User className="text-orange-400" size={18} />, description: t.sourceLabels.user, isLoading: true },
+      ];
+    } else {
+      initialSets = [
+        { id: 'space', source: '[Space Weather]', numbers: [], icon: <Globe className="text-purple-400" size={18} />, description: t.sourceLabels.space, isLoading: true },
+        { id: 'financial', source: '[Financial Entropy]', numbers: [], icon: <TrendingUp className="text-green-400" size={18} />, description: t.sourceLabels.financial, isLoading: true },
+        { id: 'network', source: '[Network Latency]', numbers: [], icon: <Activity className="text-red-400" size={18} />, description: t.sourceLabels.network, isLoading: true },
+        { id: 'kinetic', source: '[Kinetic Entropy]', numbers: [], icon: <Move className="text-orange-400" size={14} />, description: t.sourceLabels.kinetic, isLoading: true },
+        { id: 'ambient', source: '[Ambient Noise]', numbers: [], icon: <Waves className="text-blue-400" size={18} />, description: t.sourceLabels.ambient, isLoading: true },
+      ];
+    }
     setSets(initialSets); // Set initial loading states
 
     // Generate sequentially
     for (const setDef of initialSets) {
       // Create fetch promise to run in background
-      const fetchPromise = (async () => {
+      const fetchPromise: Promise<{ numbers: number[], group?: number }> = (async () => {
         try {
-          if (setDef.id === 'atmospheric') return await getAtmosphericRandom();
-          if (setDef.id === 'quantum') return await getQuantumRandom();
-          if (setDef.id === 'thermal') return await getOpticalThermalRandom();
-          if (setDef.id === 'jitter') return getJitterRandom();
-          if (setDef.id === 'user') return getUserEntropyRandom(userEntropy);
-          return [];
+          if (lotteryType === 'lotto') {
+            if (setDef.id === 'atmospheric') return { numbers: await getAtmosphericRandom() };
+            if (setDef.id === 'quantum') return { numbers: await getQuantumRandom() };
+            if (setDef.id === 'thermal') return { numbers: await getOpticalThermalRandom() };
+            if (setDef.id === 'jitter') return { numbers: getJitterRandom() };
+            if (setDef.id === 'user') return { numbers: getUserEntropyRandom(userEntropy) };
+          } else {
+            if (setDef.id === 'space') return await getSpaceWeatherPension();
+            if (setDef.id === 'financial') return await getFinancialEntropyPension();
+            if (setDef.id === 'network') return await getNetworkLatencyPension();
+            if (setDef.id === 'kinetic') return getKineticEntropyPension(userEntropy);
+            if (setDef.id === 'ambient') return await getAmbientNoisePension();
+          }
+          return { numbers: [] };
         } catch (error) {
           console.error(`Failed: ${setDef.id}`, error);
-          return [];
+          return { numbers: [] };
         }
       })();
 
       // Artificial wait for animation (5000ms per category)
       await new Promise(resolve => setTimeout(resolve, 5000));
       
-      const numbers = await fetchPromise;
+      const result = await fetchPromise;
 
       // Update state for this set
-      setSets(prev => prev.map(s => s.id === setDef.id ? { ...s, numbers, isLoading: false } : s));
+      setSets(prev => prev.map(s => s.id === setDef.id ? { ...s, numbers: result.numbers, group: result.group, isLoading: false } : s));
     }
 
     setIsGenerating(false); // Overall generation finished
-  }, [userEntropy, t]);
+  }, [userEntropy, t, lotteryType]);
 
   const handleStartGeneration = () => {
     generateAllNumbers();
@@ -611,6 +724,24 @@ const App: React.FC = () => {
           </p>
         </header>
 
+        {/* Lottery Type Switcher */}
+        <div className="flex justify-center mb-8 relative z-10">
+          <div className="flex bg-slate-900/80 p-1.5 rounded-2xl backdrop-blur-md border border-slate-700/50">
+            <button
+              onClick={() => { if (!isGenerating) { setLotteryType('lotto'); setSets([]); } }}
+              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${lotteryType === 'lotto' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'}`}
+            >
+              {lang === 'ko' ? '로또 6/45' : 'Lotto 6/45'}
+            </button>
+            <button
+              onClick={() => { if (!isGenerating) { setLotteryType('pension'); setSets([]); } }}
+              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${lotteryType === 'pension' ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'}`}
+            >
+              {lang === 'ko' ? '연금복권 720+' : 'Pension 720+'}
+            </button>
+          </div>
+        </div>
+
         {/* Wealth Luck Indicator */}
         {wealthLuck !== null && <WealthLuckIndicator luck={wealthLuck} t={t} onRefresh={() => setWealthLuck(Math.floor(Math.random() * 100) + 1)} />}
 
@@ -650,12 +781,12 @@ const App: React.FC = () => {
                     <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/10 blur-2xl rounded-full pointer-events-none"></div>
                     <div className="relative z-10 w-full mt-2 overflow-visible">
                       <h2 className="text-[13px] sm:text-[16px] md:text-2xl lg:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-2xl tracking-tight whitespace-nowrap mx-auto">
-                        {lang === 'ko' ? '✨ 5가지 물리적 소스를 기반으로 한 오늘 당신의 행운 번호' : '✨ Your Unique Lucky Numbers from 5 Physical Sources'}
+                        {lang === 'ko' ? '✨ 5가지 특수 소스를 기반으로 한 오늘 당신의 행운 번호' : '✨ Your Unique Lucky Numbers from 5 Special Sources'}
                       </h2>
                     </div>
                     <div className="relative z-10 flex items-center justify-center gap-3 w-full pb-2">
-                      <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 rounded-md text-blue-300 text-xs md:text-sm font-black font-mono tracking-widest uppercase">
-                        TRUE RANDOM LOTTO
+                      <span className={`px-3 py-1 bg-opacity-20 border rounded-md text-xs md:text-sm font-black font-mono tracking-widest uppercase ${lotteryType === 'pension' ? 'bg-purple-500/20 border-purple-500/30 text-purple-300' : 'bg-blue-500/20 border-blue-500/30 text-blue-300'}`}>
+                        {lotteryType === 'pension' ? 'TRUE RANDOM PENSION' : 'TRUE RANDOM LOTTO'}
                       </span>
                       <span className="text-slate-400 text-xs md:text-sm font-mono tracking-wider">
                         {new Date().toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -705,9 +836,43 @@ const App: React.FC = () => {
                           <CategoryAnimation id={set.id} t={t} />
                         </motion.div>
                       ) : (
-                        set.numbers.map((num, nIdx) => {
-                          const baseColorClass = getBallColor(num);
+                        <div className="flex items-center flex-wrap gap-2.5 md:gap-3.5">
+                          {set.group && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ type: 'spring', delay: idx * 0.15 }}
+                              className="flex items-center justify-center px-3 py-2 bg-slate-800 border-2 border-slate-600 rounded-xl text-slate-200 font-black text-lg shadow-lg mr-1"
+                            >
+                              {set.group}조
+                            </motion.div>
+                          )}
+                          {set.numbers.map((num, nIdx) => {
+                            const baseColorClass = getBallColor(num);
                           const delay = idx * 0.15 + nIdx * 0.05;
+
+                          if (lotteryType === 'pension') {
+                            let ballColor = 'bg-slate-500';
+                            let textColor = 'text-white';
+                            if (nIdx === 0) ballColor = 'bg-red-500';
+                            else if (nIdx === 1) ballColor = 'bg-orange-500';
+                            else if (nIdx === 2) { ballColor = 'bg-yellow-400'; textColor = 'text-slate-900'; }
+                            else if (nIdx === 3) ballColor = 'bg-blue-500';
+                            else if (nIdx === 4) ballColor = 'bg-purple-500';
+                            else if (nIdx === 5) ballColor = 'bg-slate-600';
+
+                            return (
+                              <motion.div
+                                key={`${set.id}-${nIdx}-${num}`}
+                                initial={{ scale: 0, y: 20 }}
+                                animate={{ scale: 1, y: 0 }}
+                                transition={{ type: 'spring', stiffness: 300, damping: 15, delay }}
+                                className={`w-10 h-10 flex items-center justify-center rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-white/20 ${ballColor} relative z-10`}
+                              >
+                                <span className={`z-20 font-black text-xl drop-shadow-md ${textColor}`}>{num}</span>
+                              </motion.div>
+                            );
+                          }
 
                           if (set.id === 'quantum') {
                             return (
@@ -784,7 +949,8 @@ const App: React.FC = () => {
                               )}
                             </motion.div>
                           );
-                        })
+                        })}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -798,8 +964,8 @@ const App: React.FC = () => {
                      {/* subtle pattern overlay */}
                      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-20 pointer-events-none"></div>
                      <div className="relative z-10 flex flex-col items-center text-center space-y-3">
-                       <h1 className="text-2xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200 drop-shadow-xl tracking-tighter">
-                         TRUE RANDOM LOTTO
+                       <h1 className="text-2xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200 drop-shadow-xl tracking-tighter uppercase">
+                         {lotteryType === 'pension' ? 'TRUE RANDOM PENSION' : 'TRUE RANDOM LOTTO'}
                        </h1>
                        <div className="flex items-center gap-3 bg-black/40 px-6 py-2 rounded-full border border-white/10 backdrop-blur-md shadow-2xl">
                          <div className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_12px_rgba(74,222,128,0.9)]"></div>
@@ -843,7 +1009,7 @@ const App: React.FC = () => {
         <KakaoAd />
 
         {/* Educational Info Section */}
-        <InfoSection lang={lang} />
+        <InfoSection lang={lang} lotteryType={lotteryType} />
 
         {/* Footer */}
         <footer className="mt-20 text-center text-slate-600 text-sm border-t border-slate-900 pt-8 pb-12">
