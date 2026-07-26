@@ -618,7 +618,8 @@ const App: React.FC = () => {
 
       const generatedNumbersText = sets.map(set => {
         if (set.numbers && set.numbers.length > 0) {
-          return `${set.description}: ${set.numbers.join(', ')}`;
+          const groupText = set.group ? (lang === 'ko' ? `${set.group}조 ` : `Group ${set.group} `) : '';
+          return `${set.description}: ${groupText}${set.numbers.join(', ')}`;
         }
         return '';
       }).filter(Boolean).join('\n');
